@@ -447,7 +447,10 @@ export const replyTicketAdmin = createServerFn({ method: "POST" })
     });
     if (error) throw new Error("No se pudo enviar la respuesta");
 
-    const updates: Record<string, unknown> = {};
+    const updates: {
+      assigned_to?: string;
+      status?: "abierto" | "en_revision" | "en_espera" | "en_proceso" | "resuelto" | "cerrado";
+    } = {};
     if (!ticket.assigned_to) updates.assigned_to = userId;
     if (!data.isInternalNote && ["abierto", "en_revision", "en_espera"].includes(ticket.status)) {
       updates.status = "en_proceso";
