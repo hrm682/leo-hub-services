@@ -33,12 +33,16 @@ const TYPE_LABELS: Record<string, string> = {
   recordatorio_renovacion: "Recordatorio de renovación",
   pago: "Pagos",
   ticket: "Tickets",
+  orden: "Órdenes",
+  renovacion: "Renovaciones",
 };
 
 const TYPE_TONES: Record<string, Tone> = {
   recordatorio_renovacion: "warning",
   pago: "gold",
   ticket: "info",
+  orden: "info",
+  renovacion: "gold",
 };
 
 function typeLabel(type: string): string {
