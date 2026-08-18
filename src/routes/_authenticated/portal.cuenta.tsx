@@ -64,7 +64,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 export const Route = createFileRoute("/_authenticated/portal/cuenta")({
   validateSearch: (search: Record<string, unknown>): { tab?: "perfil" | "soporte" } => ({
-    tab: search.tab === "soporte" ? "soporte" : "perfil",
+    tab: search["tab"] === "soporte" ? "soporte" : "perfil",
   }),
   loader: ({ context }) =>
     Promise.all([
