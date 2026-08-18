@@ -2,6 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   BarChart3,
+  Bell,
   CreditCard,
   LifeBuoy,
   LogOut,
@@ -34,6 +35,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: "/admin/pagos", label: "Pagos", icon: CreditCard },
   { to: "/admin/ordenes", label: "Órdenes", icon: ShoppingBag },
   { to: "/admin/tickets", label: "Tickets", icon: LifeBuoy },
+  { to: "/admin/notificaciones", label: "Notificaciones", icon: Bell },
   { to: "/admin/clientes", label: "Clientes", icon: Users },
   { to: "/admin/productos", label: "Productos", icon: Package, adminOnly: true },
 ];
