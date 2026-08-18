@@ -11,10 +11,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export const Route = createFileRoute("/catalogo")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    categoria: typeof search.categoria === "string" ? search.categoria : "",
-    q: typeof search.q === "string" ? search.q : "",
-  }),
+  validateSearch: (search: Record<string, unknown>): { categoria?: string; q?: string } => {
+    const parsed: { categoria?: string; q?: string } = {};
+    const categoria = search["categoria"];
+    const q = search["q"];
+    if (typeof categoria === "string" && categoria) parsed.categoria = categoria;
+    if (typeof q === "string" && q) parsed.q = q;
+    return parsed;
+  },
   loader: ({ context }) => context.queryClient.ensureQueryData(catalogQueryOptions),
   head: () => ({
     meta: [
@@ -57,7 +61,7 @@ function CatalogError({ error }: { error: Error }) {
 
 function CatalogPage() {
   const { data } = useSuspenseQuery(catalogQueryOptions);
-  const { categoria, q } = Route.useSearch();
+  const { categoria = "", q = "" } = Route.useSearch();
   const navigate = useNavigate({ from: "/catalogo" });
 
   const selectedCategory = data.categories.find((c) => c.slug === categoria) ?? null;
