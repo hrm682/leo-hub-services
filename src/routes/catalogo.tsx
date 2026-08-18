@@ -84,11 +84,11 @@ function CatalogPage() {
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h1 className="font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
-              Catálogo de <span className="text-gold-gradient">servicios</span>
+              Catálogo de <span className="text-gold-gradient">streaming</span>
             </h1>
             <p className="mt-2 max-w-lg text-sm text-muted-foreground sm:text-base">
-              Servicios digitales verificados. Paga con Binance, sube tu comprobante y activa tu
-              servicio sin fricción.
+              Cuentas verificadas de tus plataformas favoritas. Paga con Binance, sube tu
+              comprobante y activa tu cuenta en minutos.
             </p>
           </div>
           <div className="relative w-full sm:w-72">
@@ -101,7 +101,7 @@ function CatalogPage() {
                   replace: true,
                 })
               }
-              placeholder="Buscar servicio…"
+              placeholder="Buscar plataforma…"
               className="pl-9"
               aria-label="Buscar en el catálogo"
             />
@@ -147,7 +147,7 @@ function CatalogPage() {
             </div>
             <h2 className="mt-4 font-display text-lg font-semibold">Sin resultados</h2>
             <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-              No encontramos servicios con esos filtros. Prueba con otra categoría o búsqueda.
+              No encontramos plataformas con esos filtros. Prueba con otra búsqueda.
             </p>
             <Button
               variant="outline"
