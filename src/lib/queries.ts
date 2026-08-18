@@ -1,7 +1,14 @@
 import { queryOptions } from "@tanstack/react-query";
 
 import { getProductBySlug, listCatalog } from "@/lib/catalog.functions";
-import { getMyServices, getPortalSummary, getServiceDetail } from "@/lib/portal.functions";
+import {
+  getMyProfile,
+  getMyServices,
+  getMyTickets,
+  getPortalSummary,
+  getServiceDetail,
+  getTicketDetail,
+} from "@/lib/portal.functions";
 import { getOrderDetail } from "@/lib/shop.functions";
 
 export const catalogQueryOptions = queryOptions({
@@ -37,4 +44,20 @@ export const orderDetailQueryOptions = (orderId: string) =>
   queryOptions({
     queryKey: ["orden", orderId],
     queryFn: () => getOrderDetail({ data: { orderId } }),
+  });
+
+export const myProfileQueryOptions = queryOptions({
+  queryKey: ["portal", "perfil"],
+  queryFn: () => getMyProfile(),
+});
+
+export const myTicketsQueryOptions = queryOptions({
+  queryKey: ["portal", "tickets"],
+  queryFn: () => getMyTickets(),
+});
+
+export const ticketDetailQueryOptions = (ticketId: string) =>
+  queryOptions({
+    queryKey: ["portal", "ticket", ticketId],
+    queryFn: () => getTicketDetail({ data: { ticketId } }),
   });
