@@ -26,6 +26,7 @@ import { Route as AuthenticatedAdminProductosRouteImport } from './routes/_authe
 import { Route as AuthenticatedAdminTicketsRouteImport } from './routes/_authenticated/admin.tickets'
 import { Route as AuthenticatedPagoOrderIdRouteImport } from './routes/_authenticated/pago.$orderId'
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
+import { Route as AuthenticatedPortalCuentaRouteImport } from './routes/_authenticated/portal.cuenta'
 import { Route as AuthenticatedPortalServicioIdRouteImport } from './routes/_authenticated/portal.servicio.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -118,6 +119,12 @@ const AuthenticatedPortalIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedPortalRoute,
   } as any)
+const AuthenticatedPortalCuentaRoute =
+  AuthenticatedPortalCuentaRouteImport.update({
+    id: '/cuenta',
+    path: '/cuenta',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
 const AuthenticatedPortalServicioIdRoute =
   AuthenticatedPortalServicioIdRouteImport.update({
     id: '/servicio/$id',
@@ -140,6 +147,7 @@ export interface FileRoutesByFullPath {
   '/admin/productos': typeof AuthenticatedAdminProductosRoute
   '/admin/tickets': typeof AuthenticatedAdminTicketsRoute
   '/pago/$orderId': typeof AuthenticatedPagoOrderIdRoute
+  '/portal/cuenta': typeof AuthenticatedPortalCuentaRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
   '/portal/servicio/$id': typeof AuthenticatedPortalServicioIdRoute
@@ -157,6 +165,7 @@ export interface FileRoutesByTo {
   '/admin/productos': typeof AuthenticatedAdminProductosRoute
   '/admin/tickets': typeof AuthenticatedAdminTicketsRoute
   '/pago/$orderId': typeof AuthenticatedPagoOrderIdRoute
+  '/portal/cuenta': typeof AuthenticatedPortalCuentaRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
   '/portal/servicio/$id': typeof AuthenticatedPortalServicioIdRoute
@@ -178,6 +187,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/productos': typeof AuthenticatedAdminProductosRoute
   '/_authenticated/admin/tickets': typeof AuthenticatedAdminTicketsRoute
   '/_authenticated/pago/$orderId': typeof AuthenticatedPagoOrderIdRoute
+  '/_authenticated/portal/cuenta': typeof AuthenticatedPortalCuentaRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
   '/_authenticated/portal/servicio/$id': typeof AuthenticatedPortalServicioIdRoute
@@ -199,6 +209,7 @@ export interface FileRouteTypes {
     | '/admin/productos'
     | '/admin/tickets'
     | '/pago/$orderId'
+    | '/portal/cuenta'
     | '/admin/'
     | '/portal/'
     | '/portal/servicio/$id'
@@ -216,6 +227,7 @@ export interface FileRouteTypes {
     | '/admin/productos'
     | '/admin/tickets'
     | '/pago/$orderId'
+    | '/portal/cuenta'
     | '/admin'
     | '/portal'
     | '/portal/servicio/$id'
@@ -236,6 +248,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/productos'
     | '/_authenticated/admin/tickets'
     | '/_authenticated/pago/$orderId'
+    | '/_authenticated/portal/cuenta'
     | '/_authenticated/admin/'
     | '/_authenticated/portal/'
     | '/_authenticated/portal/servicio/$id'
@@ -371,6 +384,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalIndexRouteImport
       parentRoute: typeof AuthenticatedPortalRoute
     }
+    '/_authenticated/portal/cuenta': {
+      id: '/_authenticated/portal/cuenta'
+      path: '/cuenta'
+      fullPath: '/portal/cuenta'
+      preLoaderRoute: typeof AuthenticatedPortalCuentaRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
     '/_authenticated/portal/servicio/$id': {
       id: '/_authenticated/portal/servicio/$id'
       path: '/servicio/$id'
@@ -403,11 +423,13 @@ const AuthenticatedAdminRouteWithChildren =
   AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
 
 interface AuthenticatedPortalRouteChildren {
+  AuthenticatedPortalCuentaRoute: typeof AuthenticatedPortalCuentaRoute
   AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
   AuthenticatedPortalServicioIdRoute: typeof AuthenticatedPortalServicioIdRoute
 }
 
 const AuthenticatedPortalRouteChildren: AuthenticatedPortalRouteChildren = {
+  AuthenticatedPortalCuentaRoute: AuthenticatedPortalCuentaRoute,
   AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
   AuthenticatedPortalServicioIdRoute: AuthenticatedPortalServicioIdRoute,
 }

@@ -1,6 +1,15 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { LayoutGrid, LogOut, Menu, ShieldCheck, ShoppingCart, Store } from "lucide-react";
+import {
+  LayoutGrid,
+  LifeBuoy,
+  LogOut,
+  Menu,
+  ShieldCheck,
+  ShoppingCart,
+  Store,
+  UserRound,
+} from "lucide-react";
 import { useState, type ReactNode } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -84,7 +93,13 @@ export function PortalShell({ children }: { children: ReactNode }) {
                   </Button>
                 )}
                 <div className="text-right leading-tight">
-                  <p className="max-w-40 truncate text-sm font-semibold">{displayName}</p>
+                  <Link
+                    to="/portal/cuenta"
+                    title="Mi cuenta"
+                    className="block max-w-40 truncate text-sm font-semibold transition-colors hover:text-primary"
+                  >
+                    {displayName}
+                  </Link>
                   <button
                     onClick={handleSignOut}
                     className="inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
@@ -117,6 +132,15 @@ export function PortalShell({ children }: { children: ReactNode }) {
                       {link.label}
                     </Link>
                   ))}
+                  <Link
+                    to="/portal/cuenta"
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                    activeProps={{ className: "bg-primary/10 text-primary" }}
+                  >
+                    <UserRound className="h-4 w-4" />
+                    Mi cuenta
+                  </Link>
                   {isStaff && (
                     <Link
                       to="/admin"
@@ -147,7 +171,19 @@ export function PortalShell({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6 sm:py-8">{children}</main>
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 pb-24 pt-6 sm:px-6 sm:pb-10 sm:pt-8">
+        {children}
+      </main>
+
+      <Link
+        to="/portal/cuenta"
+        search={{ tab: "soporte" }}
+        aria-label="Ayuda y soporte"
+        className="fixed bottom-5 right-5 z-50 inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/30 transition-transform hover:scale-105"
+      >
+        <LifeBuoy className="h-4 w-4" />
+        Ayuda
+      </Link>
     </div>
   );
 }
