@@ -15,6 +15,7 @@ import { useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/lib/cart";
 import { useIsStaff, useSession } from "@/lib/use-session";
+import { NotificationsBell } from "@/components/portal/NotificationsBell";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -80,6 +81,7 @@ export function PortalShell({ children }: { children: ReactNode }) {
           </nav>
 
           <div className="flex items-center gap-1.5">
+            <NotificationsBell />
             {isLoading ? (
               <Skeleton className="hidden h-9 w-32 md:block" />
             ) : (
