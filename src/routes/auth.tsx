@@ -152,11 +152,11 @@ function AuthPage() {
           <a href="/" className="inline-flex items-center gap-3">
             <img src="/images/brand/logo-lion.png" alt="LoMaximoLeo" className="h-12 w-12" />
             <span className="font-display text-2xl font-bold tracking-tight">
-              Leo <span className="text-gold-gradient">Hub</span>
+              LoMaximo<span className="text-gold-gradient">Leo</span>
             </span>
           </a>
           <p className="mt-3 text-sm text-muted-foreground">
-            Todo tu servicio, en un solo lugar.
+            Todas tus plataformas de streaming, en un solo lugar.
           </p>
         </div>
 

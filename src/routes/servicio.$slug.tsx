@@ -27,17 +27,17 @@ export const Route = createFileRoute("/servicio/$slug")({
   },
   head: ({ loaderData }) => ({
     meta: [
-      { title: `${loaderData?.product?.name ?? "Servicio"} — LoMaximoLeo` },
+      { title: `${loaderData?.product?.name ?? "Streaming"} — LoMaximoLeo` },
       {
         name: "description",
         content:
           loaderData?.product?.short_description ||
-          "Servicio digital de LoMaximoLeo con soporte premium.",
+          "Cuenta de streaming de LoMaximoLeo con soporte premium.",
         },
-      { property: "og:title", content: `${loaderData?.product?.name ?? "Servicio"} — LoMaximoLeo` },
+      { property: "og:title", content: `${loaderData?.product?.name ?? "Streaming"} — LoMaximoLeo` },
       {
         property: "og:description",
-        content: loaderData?.product?.short_description || "Servicio digital de LoMaximoLeo.",
+        content: loaderData?.product?.short_description || "Cuenta de streaming de LoMaximoLeo.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

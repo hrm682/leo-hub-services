@@ -22,16 +22,16 @@ export const Route = createFileRoute("/catalogo")({
   loader: ({ context }) => context.queryClient.ensureQueryData(catalogQueryOptions),
   head: () => ({
     meta: [
-      { title: "Catálogo de servicios — LoMaximoLeo" },
+      { title: "Catálogo de streaming — LoMaximoLeo" },
       {
         name: "description",
         content:
-          "Explora el catálogo de LoMaximoLeo: streaming, música, VPN, nube, ofimática y más servicios digitales con soporte premium.",
+          "Explora el catálogo de LoMaximoLeo: Netflix, Disney+, HBO Max, Prime Video, Paramount+, ViX y combos con soporte premium.",
       },
-      { property: "og:title", content: "Catálogo de servicios — LoMaximoLeo" },
+      { property: "og:title", content: "Catálogo de streaming — LoMaximoLeo" },
       {
         property: "og:description",
-        content: "Servicios digitales verificados con activación rápida y soporte real.",
+        content: "Cuentas de streaming verificadas con activación rápida y soporte real.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

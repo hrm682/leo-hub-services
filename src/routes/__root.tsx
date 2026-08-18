@@ -82,18 +82,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "LoMaximoLeo — Todo tu servicio, en un solo lugar" },
+      { title: "LoMaximoLeo — Cuentas de streaming premium" },
       {
         name: "description",
         content:
-          "LoMaximoLeo: compra, gestiona y renueva tus servicios digitales con soporte premium. Tu tranquilidad también es parte del servicio.",
+          "Netflix, Disney+, HBO Max, Prime Video, Paramount+ y ViX al mejor precio. Activa, renueva y recibe soporte en un solo lugar.",
       },
       { name: "theme-color", content: "#0A0F1E" },
-      { property: "og:title", content: "LoMaximoLeo — Todo tu servicio, en un solo lugar" },
+      { property: "og:title", content: "LoMaximoLeo — Cuentas de streaming premium" },
       {
         property: "og:description",
         content:
-          "Compra, renueva y recibe soporte de tus servicios digitales desde un portal elegante y seguro.",
+          "Tus plataformas de streaming favoritas con activación rápida, precios justos y soporte real.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

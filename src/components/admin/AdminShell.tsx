@@ -124,7 +124,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
         <img src="/images/brand/logo-lion.png" alt="LoMaximoLeo" className="h-9 w-9" />
         <div>
           <p className="font-display text-base font-bold leading-tight">
-            Leo <span className="text-gold-gradient">Hub</span>
+            LoMaximo<span className="text-gold-gradient">Leo</span>
           </p>
           <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
             Administración

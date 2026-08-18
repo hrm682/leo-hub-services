@@ -1,8 +1,9 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, LifeBuoy, RefreshCcw, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, LifeBuoy, RefreshCcw, ShieldCheck, Zap } from "lucide-react";
 
 import { catalogQueryOptions } from "@/lib/queries";
+import { ParticlesBackground } from "@/components/site/ParticlesBackground";
 import { ProductCard } from "@/components/site/ProductCard";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
@@ -12,17 +13,17 @@ export const Route = createFileRoute("/")({
   loader: ({ context }) => context.queryClient.ensureQueryData(catalogQueryOptions),
   head: () => ({
     meta: [
-      { title: "LoMaximoLeo — Todo tu servicio, en un solo lugar" },
+      { title: "LoMaximoLeo — Cuentas de streaming premium" },
       {
         name: "description",
         content:
-          "LoMaximoLeo: compra, gestiona y renueva tus servicios digitales con soporte premium. Tu tranquilidad también es parte del servicio.",
+          "Netflix, Disney+, HBO Max, Prime Video, Paramount+ y ViX al mejor precio. Activa, renueva y recibe soporte en un solo lugar.",
       },
-      { property: "og:title", content: "LoMaximoLeo — Todo tu servicio, en un solo lugar" },
+      { property: "og:title", content: "LoMaximoLeo — Cuentas de streaming premium" },
       {
         property: "og:description",
         content:
-          "Compra, renueva y recibe soporte de tus servicios digitales desde un portal elegante y seguro.",
+          "Tus plataformas de streaming favoritas con activación rápida, precios justos y soporte real.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -33,9 +34,9 @@ export const Route = createFileRoute("/")({
 
 const FEATURES = [
   {
-    icon: Sparkles,
-    title: "Compra sin fricción",
-    text: "Elige tu servicio, paga por Binance y sube tu comprobante en segundos.",
+    icon: Zap,
+    title: "Activación rápida",
+    text: "Elige tu plataforma, paga por Binance y recibe tu cuenta en minutos.",
   },
   {
     icon: RefreshCcw,
@@ -45,7 +46,7 @@ const FEATURES = [
   {
     icon: LifeBuoy,
     title: "Soporte que responde",
-    text: "Tickets con seguimiento real y un equipo que te acompaña hasta resolver.",
+    text: "Tickets con seguimiento real y garantía durante toda tu suscripción.",
   },
 ];
 
@@ -61,6 +62,7 @@ function LandingPage() {
         className="pointer-events-none absolute -top-48 left-1/2 h-[30rem] w-[60rem] -translate-x-1/2 rounded-full opacity-20 blur-3xl"
         style={{ background: "radial-gradient(closest-side, oklch(0.82 0.152 86), transparent)" }}
       />
+      <ParticlesBackground className="pointer-events-none absolute inset-0 opacity-60" />
 
       <SiteHeader />
 
@@ -68,14 +70,14 @@ function LandingPage() {
         <section className="py-16 text-center sm:py-24">
           <p className="mx-auto mb-5 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary">
             <ShieldCheck className="h-3.5 w-3.5" />
-            Portal premium de servicios digitales
+            Cuentas de streaming premium
           </p>
           <h1 className="mx-auto max-w-3xl font-display text-4xl font-extrabold leading-tight tracking-tight sm:text-6xl">
-            Todo tu servicio, <span className="text-gold-gradient">en un solo lugar.</span>
+            Todas tus plataformas, <span className="text-gold-gradient">en un solo lugar.</span>
           </h1>
           <p className="mx-auto mt-6 max-w-xl text-base text-muted-foreground sm:text-lg">
-            Compra, renueva y gestiona tus servicios digitales con una experiencia elegante y un
-            soporte que sí responde. Tu tranquilidad también es parte del servicio.
+            Netflix, Disney+, HBO Max, Prime Video, Paramount+ y ViX con activación rápida,
+            precios justos y un soporte que sí responde.
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <Button asChild size="lg" className="font-semibold">
@@ -94,9 +96,9 @@ function LandingPage() {
           <section className="pb-20">
             <div className="flex items-end justify-between">
               <div>
-                <h2 className="font-display text-2xl font-bold">Servicios destacados</h2>
+                <h2 className="font-display text-2xl font-bold">Plataformas destacadas</h2>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Los favoritos de nuestros clientes, listos para activar.
+                  Las favoritas de nuestros clientes, listas para activar.
                 </p>
               </div>
               <Link

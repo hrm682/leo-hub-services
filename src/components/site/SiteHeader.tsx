@@ -59,7 +59,7 @@ export function SiteHeader() {
         <Link to="/" className="flex items-center gap-2.5">
           <img src="/images/brand/logo-lion.png" alt="LoMaximoLeo" className="h-9 w-9" />
           <span className="font-display text-lg font-bold tracking-tight">
-            Leo <span className="text-gold-gradient">Hub</span>
+            LoMaximo<span className="text-gold-gradient">Leo</span>
           </span>
         </Link>
 
