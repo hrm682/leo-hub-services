@@ -621,3 +621,35 @@ export const getFileSignedUrl = createServerFn({ method: "POST" })
 
     return { url: signed.signedUrl };
   });
+
+export const listNotificationsAdmin = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    const { data: staff } = await supabase.rpc("is_staff", { _user_id: userId });
+    if (!staff) throw new Error("Solo el equipo de Leo Hub");
+
+    const { data } = await supabase
+      .from("notifications")
+      .select("id, user_id, type, title, content, read_at, created_at")
+      .order("created_at", { ascending: false })
+      .limit(500);
+
+    const rows = data ?? [];
+    const userIds = [...new Set(rows.map((n) => n.user_id))];
+    const { data: profiles } = userIds.length
+      ? await supabase.from("profiles").select("id, full_name").in("id", userIds)
+      : { data: [] };
+    const nameById = new Map((profiles ?? []).map((p) => [p.id, p.full_name]));
+
+    return {
+      notifications: rows.map((n) => ({
+        ...n,
+        customerName: nameById.get(n.user_id) ?? "Cliente",
+      })),
+      customers: (profiles ?? [])
+        .map((p) => ({ id: p.id, fullName: p.full_name }))
+        .sort((a, b) => a.fullName.localeCompare(b.fullName, "es")),
+      types: [...new Set(rows.map((n) => n.type))].sort(),
+    };
+  });
