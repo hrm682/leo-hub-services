@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CarritoRouteImport } from './routes/carrito'
 import { Route as CatalogoRouteImport } from './routes/catalogo'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedCheckoutRouteImport } from './routes/_authenticated/checkout'
 import { Route as AuthenticatedPortalRouteImport } from './routes/_authenticated/portal'
 import { Route as ServicioSlugRouteImport } from './routes/servicio.$slug'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
@@ -23,7 +24,9 @@ import { Route as AuthenticatedAdminOrdenesRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminPagosRouteImport } from './routes/_authenticated/admin.pagos'
 import { Route as AuthenticatedAdminProductosRouteImport } from './routes/_authenticated/admin.productos'
 import { Route as AuthenticatedAdminTicketsRouteImport } from './routes/_authenticated/admin.tickets'
+import { Route as AuthenticatedPagoOrderIdRouteImport } from './routes/_authenticated/pago.$orderId'
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
+import { Route as AuthenticatedPortalServicioIdRouteImport } from './routes/_authenticated/portal.servicio.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -52,6 +55,11 @@ const CatalogoRoute = CatalogoRouteImport.update({
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCheckoutRoute = AuthenticatedCheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPortalRoute = AuthenticatedPortalRouteImport.update({
@@ -98,10 +106,22 @@ const AuthenticatedAdminTicketsRoute =
     path: '/tickets',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedPagoOrderIdRoute =
+  AuthenticatedPagoOrderIdRouteImport.update({
+    id: '/pago/$orderId',
+    path: '/pago/$orderId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPortalIndexRoute =
   AuthenticatedPortalIndexRouteImport.update({
     id: '/',
     path: '/',
+    getParentRoute: () => AuthenticatedPortalRoute,
+  } as any)
+const AuthenticatedPortalServicioIdRoute =
+  AuthenticatedPortalServicioIdRouteImport.update({
+    id: '/servicio/$id',
+    path: '/servicio/$id',
     getParentRoute: () => AuthenticatedPortalRoute,
   } as any)
 
@@ -111,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/carrito': typeof CarritoRoute
   '/catalogo': typeof CatalogoRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/checkout': typeof AuthenticatedCheckoutRoute
   '/portal': typeof AuthenticatedPortalRouteWithChildren
   '/servicio/$slug': typeof ServicioSlugRoute
   '/admin/clientes': typeof AuthenticatedAdminClientesRoute
@@ -118,22 +139,27 @@ export interface FileRoutesByFullPath {
   '/admin/pagos': typeof AuthenticatedAdminPagosRoute
   '/admin/productos': typeof AuthenticatedAdminProductosRoute
   '/admin/tickets': typeof AuthenticatedAdminTicketsRoute
+  '/pago/$orderId': typeof AuthenticatedPagoOrderIdRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
+  '/portal/servicio/$id': typeof AuthenticatedPortalServicioIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/carrito': typeof CarritoRoute
   '/catalogo': typeof CatalogoRoute
+  '/checkout': typeof AuthenticatedCheckoutRoute
   '/servicio/$slug': typeof ServicioSlugRoute
   '/admin/clientes': typeof AuthenticatedAdminClientesRoute
   '/admin/ordenes': typeof AuthenticatedAdminOrdenesRoute
   '/admin/pagos': typeof AuthenticatedAdminPagosRoute
   '/admin/productos': typeof AuthenticatedAdminProductosRoute
   '/admin/tickets': typeof AuthenticatedAdminTicketsRoute
+  '/pago/$orderId': typeof AuthenticatedPagoOrderIdRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
+  '/portal/servicio/$id': typeof AuthenticatedPortalServicioIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -143,6 +169,7 @@ export interface FileRoutesById {
   '/carrito': typeof CarritoRoute
   '/catalogo': typeof CatalogoRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/checkout': typeof AuthenticatedCheckoutRoute
   '/_authenticated/portal': typeof AuthenticatedPortalRouteWithChildren
   '/servicio/$slug': typeof ServicioSlugRoute
   '/_authenticated/admin/clientes': typeof AuthenticatedAdminClientesRoute
@@ -150,8 +177,10 @@ export interface FileRoutesById {
   '/_authenticated/admin/pagos': typeof AuthenticatedAdminPagosRoute
   '/_authenticated/admin/productos': typeof AuthenticatedAdminProductosRoute
   '/_authenticated/admin/tickets': typeof AuthenticatedAdminTicketsRoute
+  '/_authenticated/pago/$orderId': typeof AuthenticatedPagoOrderIdRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
+  '/_authenticated/portal/servicio/$id': typeof AuthenticatedPortalServicioIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -161,6 +190,7 @@ export interface FileRouteTypes {
     | '/carrito'
     | '/catalogo'
     | '/admin'
+    | '/checkout'
     | '/portal'
     | '/servicio/$slug'
     | '/admin/clientes'
@@ -168,22 +198,27 @@ export interface FileRouteTypes {
     | '/admin/pagos'
     | '/admin/productos'
     | '/admin/tickets'
+    | '/pago/$orderId'
     | '/admin/'
     | '/portal/'
+    | '/portal/servicio/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/carrito'
     | '/catalogo'
+    | '/checkout'
     | '/servicio/$slug'
     | '/admin/clientes'
     | '/admin/ordenes'
     | '/admin/pagos'
     | '/admin/productos'
     | '/admin/tickets'
+    | '/pago/$orderId'
     | '/admin'
     | '/portal'
+    | '/portal/servicio/$id'
   id:
     | '__root__'
     | '/'
@@ -192,6 +227,7 @@ export interface FileRouteTypes {
     | '/carrito'
     | '/catalogo'
     | '/_authenticated/admin'
+    | '/_authenticated/checkout'
     | '/_authenticated/portal'
     | '/servicio/$slug'
     | '/_authenticated/admin/clientes'
@@ -199,8 +235,10 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/pagos'
     | '/_authenticated/admin/productos'
     | '/_authenticated/admin/tickets'
+    | '/_authenticated/pago/$orderId'
     | '/_authenticated/admin/'
     | '/_authenticated/portal/'
+    | '/_authenticated/portal/servicio/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -254,6 +292,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/checkout': {
+      id: '/_authenticated/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof AuthenticatedCheckoutRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/portal': {
@@ -312,11 +357,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminTicketsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/pago/$orderId': {
+      id: '/_authenticated/pago/$orderId'
+      path: '/pago/$orderId'
+      fullPath: '/pago/$orderId'
+      preLoaderRoute: typeof AuthenticatedPagoOrderIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/portal/': {
       id: '/_authenticated/portal/'
       path: '/'
       fullPath: '/portal/'
       preLoaderRoute: typeof AuthenticatedPortalIndexRouteImport
+      parentRoute: typeof AuthenticatedPortalRoute
+    }
+    '/_authenticated/portal/servicio/$id': {
+      id: '/_authenticated/portal/servicio/$id'
+      path: '/servicio/$id'
+      fullPath: '/portal/servicio/$id'
+      preLoaderRoute: typeof AuthenticatedPortalServicioIdRouteImport
       parentRoute: typeof AuthenticatedPortalRoute
     }
   }
@@ -345,10 +404,12 @@ const AuthenticatedAdminRouteWithChildren =
 
 interface AuthenticatedPortalRouteChildren {
   AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
+  AuthenticatedPortalServicioIdRoute: typeof AuthenticatedPortalServicioIdRoute
 }
 
 const AuthenticatedPortalRouteChildren: AuthenticatedPortalRouteChildren = {
   AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
+  AuthenticatedPortalServicioIdRoute: AuthenticatedPortalServicioIdRoute,
 }
 
 const AuthenticatedPortalRouteWithChildren =
@@ -356,12 +417,16 @@ const AuthenticatedPortalRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
+  AuthenticatedCheckoutRoute: typeof AuthenticatedCheckoutRoute
   AuthenticatedPortalRoute: typeof AuthenticatedPortalRouteWithChildren
+  AuthenticatedPagoOrderIdRoute: typeof AuthenticatedPagoOrderIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
+  AuthenticatedCheckoutRoute: AuthenticatedCheckoutRoute,
   AuthenticatedPortalRoute: AuthenticatedPortalRouteWithChildren,
+  AuthenticatedPagoOrderIdRoute: AuthenticatedPagoOrderIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

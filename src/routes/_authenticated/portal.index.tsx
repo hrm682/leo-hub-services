@@ -13,6 +13,7 @@ import {
 
 import { daysRemaining, fmtDate, fmtUSD } from "@/lib/format";
 import { myServicesQueryOptions, portalSummaryQueryOptions } from "@/lib/queries";
+import { getMyServices } from "@/lib/portal.functions";
 import { serviceDisplayStatus, serviceTone } from "@/lib/status";
 import { useSession } from "@/lib/use-session";
 import { RenewalButton } from "@/components/portal/RenewalButton";

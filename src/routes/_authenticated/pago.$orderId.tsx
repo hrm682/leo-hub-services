@@ -110,7 +110,7 @@ function PaymentPage() {
       const path = `${user.id}/${order.id}/${Date.now()}.${ext}`;
       const { error: uploadError } = await supabase.storage
         .from("comprobantes")
-        .upload(path, file, { contentType: file.type || undefined });
+        .upload(path, file, file.type ? { contentType: file.type } : undefined);
       if (uploadError) throw new Error("No se pudo subir el archivo. Inténtalo de nuevo.");
 
       await attachReceiptFn({
