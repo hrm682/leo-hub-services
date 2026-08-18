@@ -207,7 +207,7 @@ function ServiceDetailPage() {
             Lo que incluye
           </h2>
           <ul className="mt-4 grid gap-2.5 sm:grid-cols-2">
-            {product.benefits.map((benefit) => (
+            {product.benefits.map((benefit: string) => (
               <li key={benefit} className="flex items-start gap-2.5 text-sm">
                 <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                 <span>{benefit}</span>

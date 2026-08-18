@@ -152,10 +152,8 @@ function PortalHomePage() {
   );
 }
 
-type MyService = ReturnType<typeof useServices>["services"][number];
-function useServices() {
-  return { services: [] as never[] };
-}
+type MyService = Awaited<ReturnType<typeof getMyServices>>["services"][number];
+
 
 function ServiceCard({ service }: { service: MyService }) {
   const product = service.product;
