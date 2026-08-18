@@ -5,6 +5,7 @@ import {
   getMyProfile,
   getMyServices,
   getMyTickets,
+  getNotifications,
   getPortalSummary,
   getServiceDetail,
   getTicketDetail,
@@ -61,3 +62,9 @@ export const ticketDetailQueryOptions = (ticketId: string) =>
     queryKey: ["portal", "ticket", ticketId],
     queryFn: () => getTicketDetail({ data: { ticketId } }),
   });
+
+export const notificationsQueryOptions = queryOptions({
+  queryKey: ["portal", "notificaciones"],
+  queryFn: () => getNotifications(),
+  refetchInterval: 60_000,
+});

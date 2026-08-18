@@ -63,12 +63,45 @@ export const getPortalSummary = createServerFn({ method: "GET" })
 export const getMyServices = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data } = await context.supabase
-      .from("customer_services")
-      .select(
-        "id, service_reference, status, start_date, expiration_date, created_at, products(id, name, image_url, billing_label, duration_days, price), order_items!customer_services_order_item_id_fkey(id, orders(id, order_number, status, payments(id, status, receipt_path)))",
-      )
-      .order("created_at", { ascending: false });
+    const { supabase } = context;
+
+    const [{ data }, { data: renewalOrders }] = await Promise.all([
+      supabase
+        .from("customer_services")
+        .select(
+          "id, service_reference, status, start_date, expiration_date, created_at, products(id, name, image_url, billing_label, duration_days, price), order_items!customer_services_order_item_id_fkey(id, orders(id, order_number, status, payments(id, status, receipt_path)))",
+        )
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("orders")
+        .select(
+          "id, order_number, status, created_at, order_items(customer_service_id), payments(status, receipt_path)",
+        )
+        .eq("kind", "renovacion")
+        .eq("status", "pendiente")
+        .order("created_at", { ascending: false }),
+    ]);
+
+    // Última orden de renovación pendiente por servicio (para "Completar pago" desde el portal)
+    const renewalByService = new Map<
+      string,
+      { id: string; orderNumber: string; paymentStatus: string | null; hasReceipt: boolean }
+    >();
+    for (const order of renewalOrders ?? []) {
+      const items = Array.isArray(order.order_items) ? order.order_items : [];
+      const payment = Array.isArray(order.payments)
+        ? (order.payments[0] ?? null)
+        : order.payments;
+      for (const item of items) {
+        if (!item.customer_service_id || renewalByService.has(item.customer_service_id)) continue;
+        renewalByService.set(item.customer_service_id, {
+          id: order.id,
+          orderNumber: order.order_number,
+          paymentStatus: payment?.status ?? null,
+          hasReceipt: Boolean(payment?.receipt_path),
+        });
+      }
+    }
 
     return {
       services: (data ?? []).map((s) => {
@@ -100,6 +133,7 @@ export const getMyServices = createServerFn({ method: "GET" })
                 hasReceipt: Boolean(payment?.receipt_path),
               }
             : null,
+          renewalOrder: renewalByService.get(s.id) ?? null,
         };
       }),
     };
@@ -358,7 +392,7 @@ export const getNotifications = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { data } = await context.supabase
       .from("notifications")
-      .select("id, type, title, content, read_at, created_at")
+      .select("id, type, title, content, read_at, created_at, metadata")
       .order("created_at", { ascending: false })
       .limit(50);
     return { notifications: data ?? [] };
