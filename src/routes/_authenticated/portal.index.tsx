@@ -73,7 +73,7 @@ function PortalHomePage() {
     <div className="space-y-8">
       <div>
         <h1 className="font-display text-2xl font-extrabold tracking-tight sm:text-3xl">
-          Hola{firstName ? `, ${firstName}` : ""} 👋
+          Hola{firstName ? `, ${firstName}` : ""}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Este es el estado de tus servicios hoy.
