@@ -66,7 +66,7 @@ export const getMyServices = createServerFn({ method: "GET" })
     const { data } = await context.supabase
       .from("customer_services")
       .select(
-        "id, service_reference, status, start_date, expiration_date, created_at, products(id, name, image_url, billing_label, duration_days), order_items!customer_services_order_item_id_fkey(id, orders(id, order_number, status, payments(id, status, receipt_path)))",
+        "id, service_reference, status, start_date, expiration_date, created_at, products(id, name, image_url, billing_label, duration_days, price), order_items!customer_services_order_item_id_fkey(id, orders(id, order_number, status, payments(id, status, receipt_path)))",
       )
       .order("created_at", { ascending: false });
 
@@ -114,11 +114,15 @@ export const getServiceDetail = createServerFn({ method: "POST" })
     const { data: service } = await supabase
       .from("customer_services")
       .select(
-        "id, service_reference, status, start_date, expiration_date, created_at, products(name, image_url, description, billing_label, duration_days, benefits, support_url)",
+        "id, service_reference, status, start_date, expiration_date, created_at, order_item_id, products(name, image_url, description, billing_label, duration_days, benefits, support_url, price)",
       )
       .eq("id", data.serviceId)
       .maybeSingle();
     if (!service) return { service: null };
+
+    const itemsFilter = service.order_item_id
+      ? `customer_service_id.eq.${data.serviceId},id.eq.${service.order_item_id}`
+      : `customer_service_id.eq.${data.serviceId}`;
 
     const [{ data: events }, { data: tickets }, { data: items }] = await Promise.all([
       supabase
@@ -136,7 +140,7 @@ export const getServiceDetail = createServerFn({ method: "POST" })
         .select(
           "id, service_name, unit_price, duration_days, orders(id, order_number, kind, status, total, created_at, payments(id, status, amount, provider, receipt_path, created_at))",
         )
-        .eq("customer_service_id", data.serviceId)
+        .or(itemsFilter)
         .order("created_at", { ascending: false }),
     ]);
 
