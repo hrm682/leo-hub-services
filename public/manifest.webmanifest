@@ -1,0 +1,15 @@
+{
+  "name": "Leo Hub — Portal de Servicios Digitales",
+  "short_name": "Leo Hub",
+  "description": "Gestiona, renueva y recibe soporte de tus servicios digitales en un solo lugar.",
+  "start_url": "/panel",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0A0F1E",
+  "theme_color": "#0A0F1E",
+  "lang": "es",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
