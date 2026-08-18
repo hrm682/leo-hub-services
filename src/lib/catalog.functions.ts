@@ -66,7 +66,9 @@ export const getProductBySlug = createServerFn({ method: "GET" })
 
     const { data: related } = await db
       .from("products")
-      .select("id, name, slug, short_description, image_url, price, billing_label")
+      .select(
+        "id, name, slug, short_description, image_url, price, billing_label, duration_days, is_featured",
+      )
       .eq("is_active", true)
       .eq("category_id", product?.category_id ?? "")
       .neq("slug", data.slug)
