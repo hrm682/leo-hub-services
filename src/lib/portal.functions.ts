@@ -66,20 +66,42 @@ export const getMyServices = createServerFn({ method: "GET" })
     const { data } = await context.supabase
       .from("customer_services")
       .select(
-        "id, service_reference, status, start_date, expiration_date, created_at, products(id, name, image_url, billing_label, duration_days)",
+        "id, service_reference, status, start_date, expiration_date, created_at, products(id, name, image_url, billing_label, duration_days), order_items!customer_services_order_item_id_fkey(id, orders(id, order_number, status, payments(id, status, receipt_path)))",
       )
       .order("created_at", { ascending: false });
 
     return {
-      services: (data ?? []).map((s) => ({
-        id: s.id,
-        serviceReference: s.service_reference,
-        status: s.status,
-        startDate: s.start_date,
-        expirationDate: s.expiration_date,
-        createdAt: s.created_at,
-        product: Array.isArray(s.products) ? (s.products[0] ?? null) : s.products,
-      })),
+      services: (data ?? []).map((s) => {
+        const orderItem = Array.isArray(s.order_items) ? (s.order_items[0] ?? null) : s.order_items;
+        const order = orderItem?.orders
+          ? Array.isArray(orderItem.orders)
+            ? (orderItem.orders[0] ?? null)
+            : orderItem.orders
+          : null;
+        const payment = order?.payments
+          ? Array.isArray(order.payments)
+            ? (order.payments[0] ?? null)
+            : order.payments
+          : null;
+        return {
+          id: s.id,
+          serviceReference: s.service_reference,
+          status: s.status,
+          startDate: s.start_date,
+          expirationDate: s.expiration_date,
+          createdAt: s.created_at,
+          product: Array.isArray(s.products) ? (s.products[0] ?? null) : s.products,
+          purchaseOrder: order
+            ? {
+                id: order.id,
+                orderNumber: order.order_number,
+                status: order.status,
+                paymentStatus: payment?.status ?? null,
+                hasReceipt: Boolean(payment?.receipt_path),
+              }
+            : null,
+        };
+      }),
     };
   });
 
