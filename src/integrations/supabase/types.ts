@@ -163,6 +163,7 @@ export type Database = {
           content: string
           created_at: string
           id: string
+          metadata: Json
           read_at: string | null
           title: string
           type: string
@@ -172,6 +173,7 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          metadata?: Json
           read_at?: string | null
           title: string
           type?: string
@@ -181,6 +183,7 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          metadata?: Json
           read_at?: string | null
           title?: string
           type?: string
@@ -584,6 +587,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_renewal_reminders: { Args: never; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
