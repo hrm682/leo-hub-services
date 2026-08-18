@@ -30,7 +30,7 @@ export const Route = createFileRoute("/_authenticated/portal/")({
     ]),
   head: () => ({
     meta: [
-      { title: "Mis servicios — Leo Hub" },
+      { title: "Mis servicios — LoMaximoLeo" },
       { name: "description", content: "Gestiona tus servicios, vigencias y renovaciones." },
       { name: "robots", content: "noindex" },
     ],

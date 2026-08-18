@@ -20,7 +20,7 @@ function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <img src="/images/brand/icon-lion.png" alt="Leo Hub" className="mx-auto h-16 w-16 opacity-80" />
+        <img src="/images/brand/icon-lion.png" alt="LoMaximoLeo" className="mx-auto h-16 w-16 opacity-80" />
         <h1 className="mt-6 font-display text-7xl font-bold text-foreground">404</h1>
         <h2 className="mt-4 text-xl font-semibold text-foreground">Página no encontrada</h2>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -82,18 +82,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Leo Hub — Todo tu servicio, en un solo lugar" },
+      { title: "LoMaximoLeo — Cuentas de streaming premium" },
       {
         name: "description",
         content:
-          "Leo Hub: compra, gestiona y renueva tus servicios digitales con soporte premium. Tu tranquilidad también es parte del servicio.",
+          "Netflix, Disney+, HBO Max, Prime Video, Paramount+ y ViX al mejor precio. Activa, renueva y recibe soporte en un solo lugar.",
       },
       { name: "theme-color", content: "#0A0F1E" },
-      { property: "og:title", content: "Leo Hub — Todo tu servicio, en un solo lugar" },
+      { property: "og:title", content: "LoMaximoLeo — Cuentas de streaming premium" },
       {
         property: "og:description",
         content:
-          "Compra, renueva y recibe soporte de tus servicios digitales desde un portal elegante y seguro.",
+          "Tus plataformas de streaming favoritas con activación rápida, precios justos y soporte real.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

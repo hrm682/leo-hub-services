@@ -16,7 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export const Route = createFileRoute("/_authenticated/admin/clientes")({
   head: () => ({
     meta: [
-      { title: "Clientes — Leo Hub Admin" },
+      { title: "Clientes — LoMaximoLeo Admin" },
       { name: "robots", content: "noindex" },
     ],
   }),

@@ -22,7 +22,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export const Route = createFileRoute("/_authenticated/admin/notificaciones")({
   head: () => ({
     meta: [
-      { title: "Notificaciones — Leo Hub Admin" },
+      { title: "Notificaciones — LoMaximoLeo Admin" },
       { name: "robots", content: "noindex" },
     ],
   }),

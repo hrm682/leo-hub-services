@@ -22,16 +22,16 @@ export const Route = createFileRoute("/catalogo")({
   loader: ({ context }) => context.queryClient.ensureQueryData(catalogQueryOptions),
   head: () => ({
     meta: [
-      { title: "Catálogo de servicios — Leo Hub" },
+      { title: "Catálogo de streaming — LoMaximoLeo" },
       {
         name: "description",
         content:
-          "Explora el catálogo de Leo Hub: streaming, música, VPN, nube, ofimática y más servicios digitales con soporte premium.",
+          "Explora el catálogo de LoMaximoLeo: Netflix, Disney+, HBO Max, Prime Video, Paramount+, ViX y combos con soporte premium.",
       },
-      { property: "og:title", content: "Catálogo de servicios — Leo Hub" },
+      { property: "og:title", content: "Catálogo de streaming — LoMaximoLeo" },
       {
         property: "og:description",
-        content: "Servicios digitales verificados con activación rápida y soporte real.",
+        content: "Cuentas de streaming verificadas con activación rápida y soporte real.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -84,11 +84,11 @@ function CatalogPage() {
         <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h1 className="font-display text-3xl font-extrabold tracking-tight sm:text-4xl">
-              Catálogo de <span className="text-gold-gradient">servicios</span>
+              Catálogo de <span className="text-gold-gradient">streaming</span>
             </h1>
             <p className="mt-2 max-w-lg text-sm text-muted-foreground sm:text-base">
-              Servicios digitales verificados. Paga con Binance, sube tu comprobante y activa tu
-              servicio sin fricción.
+              Cuentas verificadas de tus plataformas favoritas. Paga con Binance, sube tu
+              comprobante y activa tu cuenta en minutos.
             </p>
           </div>
           <div className="relative w-full sm:w-72">
@@ -101,7 +101,7 @@ function CatalogPage() {
                   replace: true,
                 })
               }
-              placeholder="Buscar servicio…"
+              placeholder="Buscar plataforma…"
               className="pl-9"
               aria-label="Buscar en el catálogo"
             />
@@ -147,7 +147,7 @@ function CatalogPage() {
             </div>
             <h2 className="mt-4 font-display text-lg font-semibold">Sin resultados</h2>
             <p className="mt-1 max-w-sm text-sm text-muted-foreground">
-              No encontramos servicios con esos filtros. Prueba con otra categoría o búsqueda.
+              No encontramos plataformas con esos filtros. Prueba con otra búsqueda.
             </p>
             <Button
               variant="outline"

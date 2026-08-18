@@ -5,7 +5,7 @@ import { AdminShell } from "@/components/admin/AdminShell";
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
     meta: [
-      { title: "Administración — Leo Hub" },
+      { title: "Administración — LoMaximoLeo" },
       { name: "robots", content: "noindex" },
     ],
   }),

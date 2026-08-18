@@ -38,7 +38,7 @@ import { Textarea } from "@/components/ui/textarea";
 export const Route = createFileRoute("/_authenticated/admin/tickets")({
   head: () => ({
     meta: [
-      { title: "Tickets — Leo Hub Admin" },
+      { title: "Tickets — LoMaximoLeo Admin" },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -288,8 +288,8 @@ function TicketsPage() {
                               : isCustomer
                                 ? (selectedRow?.customerName ?? "Cliente")
                                 : isMe
-                                  ? "Tú (Equipo Leo Hub)"
-                                  : "Equipo Leo Hub"}
+                                  ? "Tú (Equipo LoMaximoLeo)"
+                                  : "Equipo LoMaximoLeo"}
                             · {fmtDateTime(m.created_at)}
                           </p>
                           <p className="mt-1 whitespace-pre-wrap text-sm">{m.message}</p>

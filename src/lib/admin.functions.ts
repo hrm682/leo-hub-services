@@ -9,7 +9,7 @@ export const getAdminMetrics = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
     const { data: staff } = await supabase.rpc("is_staff", { _user_id: userId });
-    if (!staff) throw new Error("Solo el equipo de Leo Hub");
+    if (!staff) throw new Error("Solo el equipo de LoMaximoLeo");
 
     const [{ data: profiles }, { data: payments }, { data: services }, { data: tickets }, { data: orders }] =
       await Promise.all([
@@ -55,7 +55,7 @@ export const listPaymentsAdmin = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
     const { data: staff } = await supabase.rpc("is_staff", { _user_id: userId });
-    if (!staff) throw new Error("Solo el equipo de Leo Hub");
+    if (!staff) throw new Error("Solo el equipo de LoMaximoLeo");
 
     const { data } = await supabase
       .from("payments")
@@ -210,7 +210,7 @@ export const listOrdersAdmin = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
     const { data: staff } = await supabase.rpc("is_staff", { _user_id: userId });
-    if (!staff) throw new Error("Solo el equipo de Leo Hub");
+    if (!staff) throw new Error("Solo el equipo de LoMaximoLeo");
 
     const { data } = await supabase
       .from("orders")
@@ -241,7 +241,7 @@ export const listCustomersAdmin = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
     const { data: staff } = await supabase.rpc("is_staff", { _user_id: userId });
-    if (!staff) throw new Error("Solo el equipo de Leo Hub");
+    if (!staff) throw new Error("Solo el equipo de LoMaximoLeo");
 
     const { data: profiles } = await supabase
       .from("profiles")
@@ -344,7 +344,7 @@ export const listTicketsAdmin = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
     const { data: staff } = await supabase.rpc("is_staff", { _user_id: userId });
-    if (!staff) throw new Error("Solo el equipo de Leo Hub");
+    if (!staff) throw new Error("Solo el equipo de LoMaximoLeo");
 
     const { data } = await supabase
       .from("support_tickets")
@@ -394,7 +394,7 @@ export const setTicketStatusAdmin = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const { data: staff } = await supabase.rpc("is_staff", { _user_id: userId });
-    if (!staff) throw new Error("Solo el equipo de Leo Hub");
+    if (!staff) throw new Error("Solo el equipo de LoMaximoLeo");
 
     const { data: ticket } = await supabase
       .from("support_tickets")
@@ -430,7 +430,7 @@ export const replyTicketAdmin = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const { data: staff } = await supabase.rpc("is_staff", { _user_id: userId });
-    if (!staff) throw new Error("Solo el equipo de Leo Hub");
+    if (!staff) throw new Error("Solo el equipo de LoMaximoLeo");
 
     const { data: ticket } = await supabase
       .from("support_tickets")
@@ -476,7 +476,7 @@ export const getAdminReports = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
     const { data: staff } = await supabase.rpc("is_staff", { _user_id: userId });
-    if (!staff) throw new Error("Solo el equipo de Leo Hub");
+    if (!staff) throw new Error("Solo el equipo de LoMaximoLeo");
 
     const since = new Date();
     since.setMonth(since.getMonth() - 5);
@@ -627,7 +627,7 @@ export const listNotificationsAdmin = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
     const { data: staff } = await supabase.rpc("is_staff", { _user_id: userId });
-    if (!staff) throw new Error("Solo el equipo de Leo Hub");
+    if (!staff) throw new Error("Solo el equipo de LoMaximoLeo");
 
     const { data } = await supabase
       .from("notifications")

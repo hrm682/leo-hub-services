@@ -98,7 +98,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
           </div>
           <h1 className="mt-6 font-display text-2xl font-bold">Acceso restringido</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Esta área es exclusiva del equipo de Leo Hub. Si crees que es un error, contacta al
+            Esta área es exclusiva del equipo de LoMaximoLeo. Si crees que es un error, contacta al
             administrador.
           </p>
           <div className="mt-6 flex justify-center gap-2">
@@ -121,10 +121,10 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const sidebar = (
     <div className="flex h-full flex-col">
       <div className="flex items-center gap-3 px-4 py-5">
-        <img src="/images/brand/logo-lion.png" alt="Leo Hub" className="h-9 w-9" />
+        <img src="/images/brand/logo-lion.png" alt="LoMaximoLeo" className="h-9 w-9" />
         <div>
           <p className="font-display text-base font-bold leading-tight">
-            Leo <span className="text-gold-gradient">Hub</span>
+            LoMaximo<span className="text-gold-gradient">Leo</span>
           </p>
           <p className="text-[11px] uppercase tracking-wider text-muted-foreground">
             Administración
@@ -180,7 +180,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
           </Sheet>
           <div className="flex items-center gap-2">
             <img src="/images/brand/logo-lion.png" alt="" className="h-7 w-7" />
-            <span className="font-display text-sm font-bold">Leo Hub Admin</span>
+            <span className="font-display text-sm font-bold">LoMaximoLeo Admin</span>
           </div>
         </header>
         <main className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>

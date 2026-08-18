@@ -33,7 +33,7 @@ export const Route = createFileRoute("/_authenticated/portal/servicio/$id")({
     context.queryClient.ensureQueryData(serviceDetailQueryOptions(params.id)),
   head: () => ({
     meta: [
-      { title: "Detalle del servicio — Leo Hub" },
+      { title: "Detalle del servicio — LoMaximoLeo" },
       { name: "robots", content: "noindex" },
     ],
   }),

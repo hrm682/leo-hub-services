@@ -1,7 +1,7 @@
 {
-  "name": "Leo Hub — Portal de Servicios Digitales",
-  "short_name": "Leo Hub",
-  "description": "Gestiona, renueva y recibe soporte de tus servicios digitales en un solo lugar.",
+  "name": "LoMaximoLeo — Cuentas de Streaming",
+  "short_name": "LoMaximoLeo",
+  "description": "Compra, renueva y gestiona tus cuentas de streaming en un solo lugar.",
   "start_url": "/panel",
   "scope": "/",
   "display": "standalone",
