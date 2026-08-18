@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Loader2, Mail, Lock, User, Phone, ShieldCheck } from "lucide-react";
@@ -6,6 +6,11 @@ import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
+import {
+  consumePendingAuthRedirect,
+  sanitizeAuthRedirect,
+  savePendingAuthRedirect,
+} from "@/lib/auth-redirect";
 import { loginSchema, registerSchema } from "@/lib/schemas";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +18,10 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const Route = createFileRoute("/auth")({
+  validateSearch: (search: Record<string, unknown>): { redirect?: string } => {
+    const safe = sanitizeAuthRedirect(search["redirect"]);
+    return safe ? { redirect: safe } : {};
+  },
   head: () => ({
     meta: [
       { title: "Acceder — Leo Hub" },
@@ -25,7 +34,9 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
+  const router = useRouter();
   const queryClient = useQueryClient();
+  const { redirect: redirectParam } = Route.useSearch();
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [registered, setRegistered] = useState(false);
@@ -46,7 +57,16 @@ function AuthPage() {
       .select("role")
       .eq("user_id", data.user.id);
     const staff = (roles ?? []).some((r) => r.role === "admin" || r.role === "soporte");
-    navigate({ to: staff ? "/admin" : "/" });
+    if (staff) {
+      navigate({ to: "/admin" });
+      return;
+    }
+    const pending = consumePendingAuthRedirect() ?? redirectParam ?? null;
+    if (pending) {
+      router.history.push(pending);
+      return;
+    }
+    navigate({ to: "/portal" });
   }
 
   async function handleLogin(e: React.FormEvent) {
@@ -105,6 +125,7 @@ function AuthPage() {
   }
 
   async function handleGoogle() {
+    savePendingAuthRedirect(redirectParam);
     setGoogleLoading(true);
     const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: window.location.origin,

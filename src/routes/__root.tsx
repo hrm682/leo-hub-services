@@ -139,6 +139,11 @@ function RootComponent() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
+      // Si el login ocurre fuera de /auth (p. ej. retorno OAuth en "/"), retoma el destino pendiente.
+      if (event === "SIGNED_IN" && router.state.location.pathname !== "/auth") {
+        const pending = consumePendingAuthRedirect();
+        if (pending) router.history.push(pending);
+      }
       router.invalidate();
       if (event === "SIGNED_OUT") {
         queryClient.invalidateQueries({ queryKey: ["session"] });
