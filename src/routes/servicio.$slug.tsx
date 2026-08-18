@@ -27,17 +27,17 @@ export const Route = createFileRoute("/servicio/$slug")({
   },
   head: ({ loaderData }) => ({
     meta: [
-      { title: `${loaderData?.product?.name ?? "Servicio"} — Leo Hub` },
+      { title: `${loaderData?.product?.name ?? "Servicio"} — LoMaximoLeo` },
       {
         name: "description",
         content:
           loaderData?.product?.short_description ||
-          "Servicio digital de Leo Hub con soporte premium.",
+          "Servicio digital de LoMaximoLeo con soporte premium.",
         },
-      { property: "og:title", content: `${loaderData?.product?.name ?? "Servicio"} — Leo Hub` },
+      { property: "og:title", content: `${loaderData?.product?.name ?? "Servicio"} — LoMaximoLeo` },
       {
         property: "og:description",
-        content: loaderData?.product?.short_description || "Servicio digital de Leo Hub.",
+        content: loaderData?.product?.short_description || "Servicio digital de LoMaximoLeo.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

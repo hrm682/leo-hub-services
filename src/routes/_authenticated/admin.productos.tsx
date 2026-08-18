@@ -37,7 +37,7 @@ import { Textarea } from "@/components/ui/textarea";
 export const Route = createFileRoute("/_authenticated/admin/productos")({
   head: () => ({
     meta: [
-      { title: "Productos — Leo Hub Admin" },
+      { title: "Productos — LoMaximoLeo Admin" },
       { name: "robots", content: "noindex" },
     ],
   }),

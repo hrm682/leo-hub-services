@@ -17,7 +17,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export const Route = createFileRoute("/_authenticated/checkout")({
   head: () => ({
     meta: [
-      { title: "Confirmar pedido — Leo Hub" },
+      { title: "Confirmar pedido — LoMaximoLeo" },
       { name: "description", content: "Confirma tu pedido y paga con Binance Pay." },
       { name: "robots", content: "noindex" },
     ],

@@ -12,13 +12,13 @@ export const Route = createFileRoute("/")({
   loader: ({ context }) => context.queryClient.ensureQueryData(catalogQueryOptions),
   head: () => ({
     meta: [
-      { title: "Leo Hub — Todo tu servicio, en un solo lugar" },
+      { title: "LoMaximoLeo — Todo tu servicio, en un solo lugar" },
       {
         name: "description",
         content:
-          "Leo Hub: compra, gestiona y renueva tus servicios digitales con soporte premium. Tu tranquilidad también es parte del servicio.",
+          "LoMaximoLeo: compra, gestiona y renueva tus servicios digitales con soporte premium. Tu tranquilidad también es parte del servicio.",
       },
-      { property: "og:title", content: "Leo Hub — Todo tu servicio, en un solo lugar" },
+      { property: "og:title", content: "LoMaximoLeo — Todo tu servicio, en un solo lugar" },
       {
         property: "og:description",
         content:

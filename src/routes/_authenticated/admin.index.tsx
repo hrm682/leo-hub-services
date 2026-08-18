@@ -33,7 +33,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => ({
     meta: [
-      { title: "Reportes — Leo Hub Admin" },
+      { title: "Reportes — LoMaximoLeo Admin" },
       { name: "robots", content: "noindex" },
     ],
   }),

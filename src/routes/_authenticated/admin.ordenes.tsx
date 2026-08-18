@@ -26,7 +26,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export const Route = createFileRoute("/_authenticated/admin/ordenes")({
   head: () => ({
     meta: [
-      { title: "Órdenes — Leo Hub Admin" },
+      { title: "Órdenes — LoMaximoLeo Admin" },
       { name: "robots", content: "noindex" },
     ],
   }),

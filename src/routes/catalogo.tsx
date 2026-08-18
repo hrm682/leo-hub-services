@@ -22,13 +22,13 @@ export const Route = createFileRoute("/catalogo")({
   loader: ({ context }) => context.queryClient.ensureQueryData(catalogQueryOptions),
   head: () => ({
     meta: [
-      { title: "Catálogo de servicios — Leo Hub" },
+      { title: "Catálogo de servicios — LoMaximoLeo" },
       {
         name: "description",
         content:
-          "Explora el catálogo de Leo Hub: streaming, música, VPN, nube, ofimática y más servicios digitales con soporte premium.",
+          "Explora el catálogo de LoMaximoLeo: streaming, música, VPN, nube, ofimática y más servicios digitales con soporte premium.",
       },
-      { property: "og:title", content: "Catálogo de servicios — Leo Hub" },
+      { property: "og:title", content: "Catálogo de servicios — LoMaximoLeo" },
       {
         property: "og:description",
         content: "Servicios digitales verificados con activación rápida y soporte real.",

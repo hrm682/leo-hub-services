@@ -24,8 +24,8 @@ export const Route = createFileRoute("/auth")({
   },
   head: () => ({
     meta: [
-      { title: "Acceder — Leo Hub" },
-      { name: "description", content: "Inicia sesión o crea tu cuenta en Leo Hub." },
+      { title: "Acceder — LoMaximoLeo" },
+      { name: "description", content: "Inicia sesión o crea tu cuenta en LoMaximoLeo." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -150,7 +150,7 @@ function AuthPage() {
       <div className="relative w-full max-w-md">
         <div className="mb-8 text-center">
           <a href="/" className="inline-flex items-center gap-3">
-            <img src="/images/brand/logo-lion.png" alt="Leo Hub" className="h-12 w-12" />
+            <img src="/images/brand/logo-lion.png" alt="LoMaximoLeo" className="h-12 w-12" />
             <span className="font-display text-2xl font-bold tracking-tight">
               Leo <span className="text-gold-gradient">Hub</span>
             </span>

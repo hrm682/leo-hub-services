@@ -43,7 +43,7 @@ export const Route = createFileRoute("/_authenticated/pago/$orderId")({
     context.queryClient.ensureQueryData(orderDetailQueryOptions(params.orderId)),
   head: () => ({
     meta: [
-      { title: "Pago de orden — Leo Hub" },
+      { title: "Pago de orden — LoMaximoLeo" },
       { name: "robots", content: "noindex" },
     ],
   }),

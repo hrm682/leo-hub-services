@@ -74,7 +74,7 @@ export const Route = createFileRoute("/_authenticated/portal/cuenta")({
     ]),
   head: () => ({
     meta: [
-      { title: "Mi cuenta — Leo Hub" },
+      { title: "Mi cuenta — LoMaximoLeo" },
       {
         name: "description",
         content: "Actualiza tus datos personales y gestiona tus solicitudes de ayuda.",
@@ -688,7 +688,7 @@ function TicketDetailDialog({
                             own ? "text-primary-foreground/70" : "text-muted-foreground",
                           )}
                         >
-                          {own ? "Tú" : "Equipo Leo Hub"} · {fmtDateTime(m.created_at)}
+                          {own ? "Tú" : "Equipo LoMaximoLeo"} · {fmtDateTime(m.created_at)}
                         </p>
                       </div>
                     </div>

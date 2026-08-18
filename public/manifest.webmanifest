@@ -1,6 +1,6 @@
 {
-  "name": "Leo Hub — Portal de Servicios Digitales",
-  "short_name": "Leo Hub",
+  "name": "LoMaximoLeo — Portal de Servicios Digitales",
+  "short_name": "LoMaximoLeo",
   "description": "Gestiona, renueva y recibe soporte de tus servicios digitales en un solo lugar.",
   "start_url": "/panel",
   "scope": "/",

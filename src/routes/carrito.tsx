@@ -13,7 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export const Route = createFileRoute("/carrito")({
   head: () => ({
     meta: [
-      { title: "Tu carrito — Leo Hub" },
+      { title: "Tu carrito — LoMaximoLeo" },
       { name: "description", content: "Revisa tu pedido antes de confirmar el pago." },
       { name: "robots", content: "noindex" },
     ],
