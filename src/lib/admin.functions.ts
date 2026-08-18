@@ -470,3 +470,154 @@ export const replyTicketAdmin = createServerFn({ method: "POST" })
 
     return { ok: true as const };
   });
+
+export const getAdminReports = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    const { data: staff } = await supabase.rpc("is_staff", { _user_id: userId });
+    if (!staff) throw new Error("Solo el equipo de Leo Hub");
+
+    const since = new Date();
+    since.setMonth(since.getMonth() - 5);
+    since.setDate(1);
+    since.setHours(0, 0, 0, 0);
+
+    const [{ data: payments }, { data: orders }, { data: tickets }, { data: items }] =
+      await Promise.all([
+        supabase
+          .from("payments")
+          .select("amount, status, created_at")
+          .gte("created_at", since.toISOString()),
+        supabase.from("orders").select("id, status, kind"),
+        supabase.from("support_tickets").select("id, status, priority, rating"),
+        supabase.from("order_items").select("service_name, quantity, unit_price"),
+      ]);
+
+    const now = new Date();
+    const months: { key: string; label: string; total: number }[] = [];
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push({
+        key: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`,
+        label: d.toLocaleDateString("es-EC", { month: "short" }),
+        total: 0,
+      });
+    }
+    for (const p of payments ?? []) {
+      if (p.status !== "aprobado") continue;
+      const d = new Date(p.created_at);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+      const m = months.find((x) => x.key === key);
+      if (m) m.total += Number(p.amount);
+    }
+    for (const m of months) m.total = Math.round(m.total * 100) / 100;
+
+    const countBy = <T extends string>(rows: { status: T }[]) => {
+      const acc: Record<string, number> = {};
+      for (const r of rows) acc[r.status] = (acc[r.status] ?? 0) + 1;
+      return Object.entries(acc).map(([status, count]) => ({ status, count }));
+    };
+
+    const ratings = (tickets ?? []).map((t) => t.rating).filter((r): r is number => r !== null);
+    const avgRating = ratings.length
+      ? Math.round((ratings.reduce((a, b) => a + b, 0) / ratings.length) * 10) / 10
+      : null;
+
+    const productAgg = new Map<string, { name: string; unidades: number; ingresos: number }>();
+    for (const item of items ?? []) {
+      const current = productAgg.get(item.service_name) ?? {
+        name: item.service_name,
+        unidades: 0,
+        ingresos: 0,
+      };
+      current.unidades += item.quantity;
+      current.ingresos += Number(item.unit_price) * item.quantity;
+      productAgg.set(item.service_name, current);
+    }
+    const topProducts = [...productAgg.values()]
+      .sort((a, b) => b.ingresos - a.ingresos)
+      .slice(0, 5)
+      .map((p) => ({ ...p, ingresos: Math.round(p.ingresos * 100) / 100 }));
+
+    return {
+      revenueByMonth: months,
+      ordersByStatus: countBy(orders ?? []),
+      ordersByKind: countBy((orders ?? []).map((o) => ({ status: o.kind }))),
+      ticketsByStatus: countBy(tickets ?? []),
+      avgRating,
+      topProducts,
+    };
+  });
+
+export const setUserRoleAdmin = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) =>
+    z
+      .object({
+        targetUserId: z.string().uuid(),
+        role: z.enum(["soporte", "cliente"]),
+        action: z.enum(["grant", "revoke"]),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { data: isAdmin } = await supabase.rpc("has_role", {
+      _user_id: userId,
+      _role: "admin",
+    });
+    if (!isAdmin) throw new Error("Solo administradores pueden gestionar roles");
+    if (data.targetUserId === userId) throw new Error("No puedes modificar tu propio rol");
+
+    if (data.action === "grant") {
+      if (data.role === "cliente") return { ok: true as const };
+      const { error } = await supabase
+        .from("user_roles")
+        .insert({ user_id: data.targetUserId, role: data.role });
+      if (error && !error.message.includes("duplicate"))
+        throw new Error("No se pudo asignar el rol");
+    } else {
+      if (data.role === "cliente") throw new Error("El rol base de cliente no se puede revocar");
+      const { error } = await supabase
+        .from("user_roles")
+        .delete()
+        .eq("user_id", data.targetUserId)
+        .eq("role", data.role);
+      if (error) throw new Error("No se pudo revocar el rol");
+    }
+
+    await supabase.from("audit_logs").insert({
+      user_id: userId,
+      action: `role_${data.action}`,
+      entity_type: "user_role",
+      entity_id: data.targetUserId,
+      metadata: { role: data.role },
+    });
+
+    return { ok: true as const };
+  });
+
+export const getFileSignedUrl = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) =>
+    z
+      .object({
+        bucket: z.enum(["comprobantes", "adjuntos"]),
+        path: z.string().trim().min(1).max(500),
+      })
+      .parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { data: staff } = await supabase.rpc("is_staff", { _user_id: userId });
+    const isOwnerPath = data.path.startsWith(`${userId}/`);
+    if (!staff && !isOwnerPath) throw new Error("Sin acceso a este archivo");
+
+    const { data: signed, error } = await supabase.storage
+      .from(data.bucket)
+      .createSignedUrl(data.path, 120);
+    if (error || !signed) throw new Error("No se pudo generar el enlace del archivo");
+
+    return { url: signed.signedUrl };
+  });
