@@ -239,8 +239,9 @@ function CheckoutPage() {
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (
                     <ArrowRight className="mr-2 h-4 w-4" />
-                    {creating ? "Creando orden…" : "Confirmar y pagar"}
-                  </Button>
+                  )}
+                  {creating ? "Creando orden…" : "Confirmar y pagar"}
+                </Button>
 
                 <p className="mt-4 flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
                   <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
