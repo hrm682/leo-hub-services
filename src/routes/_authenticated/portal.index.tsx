@@ -1,14 +1,15 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import {
-  AlertTriangle,
   ArrowRight,
+  CalendarClock,
   CheckCircle2,
   Clock,
   CreditCard,
   PackageOpen,
   RefreshCcw,
   UploadCloud,
+  Wallet,
 } from "lucide-react";
 
 import { daysRemaining, fmtDate, fmtUSD } from "@/lib/format";
@@ -69,6 +70,16 @@ function PortalHomePage() {
     { label: "En renovación", value: summary.enRenovacion, icon: RefreshCcw, tone: "text-primary" },
   ];
 
+  // Renovación programada: servicios que vencen en 7 días o menos, o con renovación pendiente de pago
+  const renovaciones = servicesData.services
+    .filter((s) => {
+      if (s.status === "en_renovacion" && s.renewalOrder) return true;
+      if (s.status !== "activo") return false;
+      const d = daysRemaining(s.expirationDate);
+      return d !== null && d <= 7;
+    })
+    .sort((a, b) => (a.expirationDate ?? "").localeCompare(b.expirationDate ?? ""));
+
   return (
     <div className="space-y-8">
       <div>
@@ -94,20 +105,93 @@ function PortalHomePage() {
         ))}
       </section>
 
-      {summary.proximosVencimientos.length > 0 && (
-        <div className="flex items-start gap-3 rounded-2xl border border-warning/30 bg-warning/10 p-4">
-          <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
-          <div className="text-sm">
-            <p className="font-semibold text-warning">Vencimientos próximos</p>
-            <ul className="mt-1 space-y-0.5 text-muted-foreground">
-              {summary.proximosVencimientos.map((item) => (
-                <li key={item.id}>
-                  {item.productName} — vence {fmtDate(item.expirationDate)}
-                </li>
-              ))}
-            </ul>
+      {renovaciones.length > 0 && (
+        <section className="glass rounded-2xl p-5">
+          <div className="flex items-center gap-2">
+            <CalendarClock className="h-5 w-5 text-primary" />
+            <h2 className="font-display text-lg font-bold">Renovación programada</h2>
           </div>
-        </div>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Te avisaremos en tu campana de notificaciones 7, 3 y 1 días antes de cada vencimiento.
+          </p>
+          <ul className="mt-4 space-y-3">
+            {renovaciones.map((service) => {
+              const product = service.product;
+              const days = daysRemaining(service.expirationDate);
+              const renewal = service.status === "en_renovacion" ? service.renewalOrder : null;
+              return (
+                <li
+                  key={service.id}
+                  className="flex flex-col gap-3 rounded-xl border border-border/60 bg-background/40 p-4 sm:flex-row sm:items-center sm:justify-between"
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold">{product?.name ?? "Servicio"}</p>
+                    <p className="text-xs text-muted-foreground">{service.serviceReference}</p>
+                    <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
+                      <span className="text-muted-foreground">
+                        Vence el {fmtDate(service.expirationDate)}
+                      </span>
+                      {days !== null && (
+                        <span
+                          className={
+                            days < 0
+                              ? "font-semibold text-destructive"
+                              : days <= 3
+                                ? "font-semibold text-warning"
+                                : "font-semibold text-success"
+                          }
+                        >
+                          {days < 0
+                            ? `Venció hace ${Math.abs(days)} días`
+                            : days === 0
+                              ? "Vence hoy"
+                              : days === 1
+                                ? "Vence mañana"
+                                : `${days} días restantes`}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between gap-3 sm:justify-end">
+                    <p className="font-display text-base font-bold">
+                      {fmtUSD(product ? Number(product.price) : 0)}
+                    </p>
+                    {renewal ? (
+                      <Button
+                        asChild
+                        size="sm"
+                        className="font-semibold"
+                        variant={renewal.hasReceipt ? "secondary" : "default"}
+                      >
+                        <Link to="/pago/$orderId" params={{ orderId: renewal.id }}>
+                          {renewal.hasReceipt ? (
+                            <>
+                              <Clock className="mr-1.5 h-4 w-4" />
+                              Pago en revisión
+                            </>
+                          ) : (
+                            <>
+                              <Wallet className="mr-1.5 h-4 w-4" />
+                              Completar pago
+                            </>
+                          )}
+                        </Link>
+                      </Button>
+                    ) : service.status === "activo" && product ? (
+                      <RenewalButton
+                        serviceId={service.id}
+                        productName={product.name}
+                        price={Number(product.price)}
+                        durationDays={product.duration_days}
+                        className="font-semibold"
+                      />
+                    ) : null}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
       )}
 
       <section>
@@ -173,6 +257,7 @@ function ServiceCard({ service }: { service: MyService }) {
     !service.purchaseOrder.hasReceipt;
   const receiptInReview =
     service.status === "pago_pendiente" && service.purchaseOrder?.hasReceipt;
+  const renewalPayment = service.status === "en_renovacion" ? service.renewalOrder : null;
 
   return (
     <article className="glass card-glow flex flex-col overflow-hidden rounded-2xl">
@@ -226,9 +311,12 @@ function ServiceCard({ service }: { service: MyService }) {
           </p>
         )}
         {service.status === "en_renovacion" && (
-          <p className="text-xs leading-relaxed text-muted-foreground">
-            Tu renovación está en proceso. Al aprobarse el pago se extiende tu vigencia.
-          </p>
+          <div className="space-y-1 text-xs leading-relaxed text-muted-foreground">
+            <p>Tu renovación está en proceso. Al aprobarse el pago se extiende tu vigencia.</p>
+            {service.expirationDate && (
+              <p>Vigencia actual hasta el {fmtDate(service.expirationDate)}.</p>
+            )}
+          </div>
         )}
         {service.status === "suspendido" && (
           <p className="text-xs leading-relaxed text-muted-foreground">
@@ -259,7 +347,28 @@ function ServiceCard({ service }: { service: MyService }) {
               </Link>
             </Button>
           )}
-          <Button asChild variant="outline" className={service.status === "activo" || awaitingReceipt ? "" : "flex-1"}>
+          {renewalPayment && (
+            <Button
+              asChild
+              className="flex-1 font-semibold"
+              variant={renewalPayment.hasReceipt ? "secondary" : "default"}
+            >
+              <Link to="/pago/$orderId" params={{ orderId: renewalPayment.id }}>
+                {renewalPayment.hasReceipt ? (
+                  <>
+                    <Clock className="mr-1.5 h-4 w-4" />
+                    Pago en revisión
+                  </>
+                ) : (
+                  <>
+                    <Wallet className="mr-1.5 h-4 w-4" />
+                    Completar pago
+                  </>
+                )}
+              </Link>
+            </Button>
+          )}
+          <Button asChild variant="outline" className={service.status === "activo" || awaitingReceipt || renewalPayment ? "" : "flex-1"}>
             <Link to="/portal/servicio/$id" params={{ id: service.id }}>
               Detalle
             </Link>
