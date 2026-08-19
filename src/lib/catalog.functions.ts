@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
 import type { Database } from "@/integrations/supabase/types";
@@ -25,10 +25,10 @@ export const listCatalog = createServerFn({ method: "GET" }).handler(async () =>
       .select("id, name, slug, description, sort_order")
       .eq("is_active", true)
       .order("sort_order"),
-    db
+    (db as unknown as SupabaseClient)
       .from("products")
       .select(
-        "id, category_id, name, slug, short_description, benefits, image_url, price, duration_days, billing_label, is_featured",
+        "id, category_id, name, slug, short_description, benefits, image_url, price, duration_days, billing_label, is_featured, stock",
       )
       .eq("is_active", true)
       .order("is_featured", { ascending: false })
@@ -55,19 +55,20 @@ export const getProductBySlug = createServerFn({ method: "GET" })
       },
     });
 
-    const { data: product } = await db
+    const pdb = db as unknown as SupabaseClient;
+    const { data: product } = await pdb
       .from("products")
       .select(
-        "id, category_id, name, slug, short_description, description, benefits, image_url, price, duration_days, billing_label, is_featured, categories(name, slug)",
+        "id, category_id, name, slug, short_description, description, benefits, image_url, price, duration_days, billing_label, is_featured, stock, categories(name, slug)",
       )
       .eq("slug", data.slug)
       .eq("is_active", true)
       .maybeSingle();
 
-    const { data: related } = await db
+    const { data: related } = await pdb
       .from("products")
       .select(
-        "id, name, slug, short_description, image_url, price, billing_label, duration_days, is_featured",
+        "id, name, slug, short_description, image_url, price, billing_label, duration_days, is_featured, stock",
       )
       .eq("is_active", true)
       .eq("category_id", product?.category_id ?? "")

@@ -14,7 +14,7 @@ import {
 import { useCart } from "@/lib/cart";
 import { fmtUSD } from "@/lib/format";
 import { productQueryOptions } from "@/lib/queries";
-import { ProductCard, ProductImage } from "@/components/site/ProductCard";
+import { isSoldOut, ProductCard, ProductImage } from "@/components/site/ProductCard";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { Button } from "@/components/ui/button";
@@ -104,6 +104,7 @@ function ProductPage() {
     ? (product.categories[0] ?? null)
     : product.categories;
   const price = Number(product.price);
+  const soldOut = isSoldOut(product.stock);
 
   function addToCart() {
     addItem({
@@ -167,7 +168,7 @@ function ProductPage() {
 
             {product.benefits.length > 0 && (
               <ul className="mt-6 space-y-2.5">
-                {product.benefits.map((benefit) => (
+                {product.benefits.map((benefit: string) => (
                   <li key={benefit} className="flex items-start gap-2.5 text-sm">
                     <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
                     <span>{benefit}</span>
@@ -176,15 +177,22 @@ function ProductPage() {
               </ul>
             )}
 
+            {soldOut && (
+              <p className="mt-6 inline-flex items-center rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm font-semibold text-destructive">
+                Este servicio está agotado por ahora. Vuelve pronto o contáctanos.
+              </p>
+            )}
+
             <div className="mt-8 flex flex-wrap gap-3">
-              <Button size="lg" className="font-semibold" onClick={addToCart}>
+              <Button size="lg" className="font-semibold" onClick={addToCart} disabled={soldOut}>
                 <ShoppingCart className="mr-2 h-4 w-4" />
-                Añadir al carrito
+                {soldOut ? "Agotado" : "Añadir al carrito"}
               </Button>
               <Button
                 size="lg"
                 variant="outline"
                 className="font-semibold"
+                disabled={soldOut}
                 onClick={() => {
                   addToCart();
                   navigate({ to: "/carrito" });

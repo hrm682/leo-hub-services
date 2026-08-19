@@ -74,6 +74,7 @@ interface ProductFormState {
   billingLabel: string;
   isActive: boolean;
   isFeatured: boolean;
+  stock: string;
 }
 
 const EMPTY_FORM: ProductFormState = {
@@ -90,6 +91,7 @@ const EMPTY_FORM: ProductFormState = {
   billingLabel: "mensual",
   isActive: true,
   isFeatured: false,
+  stock: "",
 };
 
 function slugify(text: string): string {
@@ -151,6 +153,7 @@ function ProductosPage() {
       billingLabel: p.billing_label,
       isActive: p.is_active,
       isFeatured: p.is_featured,
+      stock: p.stock === null || p.stock === undefined ? "" : String(p.stock),
     });
     setDialogOpen(true);
   }
@@ -173,6 +176,7 @@ function ProductosPage() {
       billingLabel: f.billingLabel,
       isActive: f.isActive,
       isFeatured: f.isFeatured,
+      stock: f.stock.trim() === "" ? null : Math.max(0, Number.parseInt(f.stock, 10) || 0),
     };
   }
 
@@ -201,6 +205,7 @@ function ProductosPage() {
       billingLabel: p.billing_label,
       isActive: field === "isActive" ? value : p.is_active,
       isFeatured: field === "isFeatured" ? value : p.is_featured,
+      stock: p.stock ?? null,
     });
   }
 
@@ -273,6 +278,17 @@ function ProductosPage() {
                     <Badge variant="outline" className={cn("backdrop-blur", TONE_CLASSES.gold)}>
                       <Star className="mr-1 h-3 w-3 fill-current" />
                       Destacado
+                    </Badge>
+                  )}
+                  {p.stock !== null && p.stock !== undefined && (
+                    <Badge
+                      variant="outline"
+                      className={cn(
+                        "backdrop-blur",
+                        p.stock <= 0 ? TONE_CLASSES.danger : TONE_CLASSES.info,
+                      )}
+                    >
+                      {p.stock <= 0 ? "Agotado" : `${p.stock} en stock`}
                     </Badge>
                   )}
                 </div>
@@ -419,6 +435,23 @@ function ProductosPage() {
                   required
                 />
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="p-stock">Inventario (stock)</Label>
+              <Input
+                id="p-stock"
+                type="number"
+                min="0"
+                step="1"
+                value={form.stock}
+                onChange={(e) => setForm((f) => ({ ...f, stock: e.target.value }))}
+                placeholder="Vacío = ilimitado · 0 = agotado"
+              />
+              <p className="text-xs text-muted-foreground">
+                Déjalo vacío para stock ilimitado. Pon <strong>0</strong> para marcar “Agotado”.
+                Baja automáticamente 1 por cada compra pagada.
+              </p>
             </div>
 
             <div className="space-y-2">

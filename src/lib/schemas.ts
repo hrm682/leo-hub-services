@@ -125,6 +125,8 @@ export const productInputSchema = z.object({
   billingLabel: z.string().trim().max(30),
   isActive: z.boolean(),
   isFeatured: z.boolean(),
+  // Inventario: null = ilimitado; 0 = agotado; N = unidades disponibles.
+  stock: z.number().int().min(0).max(1000000).nullable(),
 });
 
 export const savedReplySchema = z.object({

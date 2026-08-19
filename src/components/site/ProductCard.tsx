@@ -16,6 +16,12 @@ export interface CatalogProduct {
   billing_label: string;
   duration_days?: number;
   is_featured?: boolean;
+  stock?: number | null;
+}
+
+/** Agotado cuando el stock está controlado (no null) y llegó a 0. */
+export function isSoldOut(stock: number | null | undefined): boolean {
+  return stock !== null && stock !== undefined && stock <= 0;
 }
 
 export function ProductImage({
@@ -52,6 +58,7 @@ export function ProductImage({
 export function ProductCard({ product }: { product: CatalogProduct }) {
   const { addItem } = useCart();
   const price = Number(product.price);
+  const soldOut = isSoldOut(product.stock);
 
   return (
     <article className="glass card-glow group flex flex-col overflow-hidden rounded-2xl">
@@ -61,14 +68,25 @@ export function ProductCard({ product }: { product: CatalogProduct }) {
         className="relative block aspect-[16/9] overflow-hidden"
         aria-label={`Ver ${product.name}`}
       >
-        <div className="h-full w-full transition-transform duration-500 group-hover:scale-105">
+        <div
+          className={cn(
+            "h-full w-full transition-transform duration-500 group-hover:scale-105",
+            soldOut && "grayscale",
+          )}
+        >
           <ProductImage src={product.image_url} alt={product.name} />
         </div>
-        {product.is_featured && (
-          <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full border border-primary/30 bg-background/80 px-2.5 py-1 text-[11px] font-semibold text-primary backdrop-blur">
-            <Star className="h-3 w-3 fill-current" />
-            Destacado
+        {soldOut ? (
+          <span className="absolute left-3 top-3 inline-flex items-center rounded-full border border-destructive/40 bg-background/80 px-2.5 py-1 text-[11px] font-semibold text-destructive backdrop-blur">
+            Agotado
           </span>
+        ) : (
+          product.is_featured && (
+            <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full border border-primary/30 bg-background/80 px-2.5 py-1 text-[11px] font-semibold text-primary backdrop-blur">
+              <Star className="h-3 w-3 fill-current" />
+              Destacado
+            </span>
+          )
         )}
       </Link>
 
@@ -94,6 +112,7 @@ export function ProductCard({ product }: { product: CatalogProduct }) {
           <Button
             size="sm"
             className="font-semibold"
+            disabled={soldOut}
             onClick={() =>
               addItem({
                 productId: product.id,
@@ -107,7 +126,7 @@ export function ProductCard({ product }: { product: CatalogProduct }) {
             }
           >
             <ShoppingCart className="mr-1.5 h-4 w-4" />
-            Añadir
+            {soldOut ? "Agotado" : "Añadir"}
           </Button>
         </div>
       </div>

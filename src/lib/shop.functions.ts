@@ -1,8 +1,18 @@
 import { createServerFn } from "@tanstack/react-start";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { attachReceiptSchema, createOrderSchema, createRenewalSchema } from "@/lib/schemas";
+
+type ProductForOrder = {
+  id: string;
+  name: string;
+  price: number;
+  duration_days: number;
+  is_active: boolean;
+  stock: number | null;
+};
 
 export const validateCoupon = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -30,17 +40,23 @@ export const createOrder = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
 
     const ids = [...new Set(data.items.map((i) => i.productId))];
-    const { data: products, error: productsError } = await supabase
+    const { data: products, error: productsError } = await (supabase as unknown as SupabaseClient)
       .from("products")
-      .select("id, name, price, duration_days, is_active")
+      .select("id, name, price, duration_days, is_active, stock")
       .in("id", ids);
     if (productsError || !products) throw new Error("No se pudo procesar el catálogo");
 
-    const byId = new Map(products.map((p) => [p.id, p]));
+    const byId = new Map(
+      (products as ProductForOrder[]).map((p) => [p.id, p]),
+    );
     for (const item of data.items) {
       const p = byId.get(item.productId);
       if (!p || !p.is_active)
         throw new Error("Uno de los servicios ya no está disponible. Actualiza tu carrito.");
+      if (p.stock !== null && p.stock <= 0)
+        throw new Error(`"${p.name}" está agotado. Quítalo del carrito para continuar.`);
+      if (p.stock !== null && item.quantity > p.stock)
+        throw new Error(`Solo quedan ${p.stock} unidad(es) de "${p.name}".`);
     }
 
     let subtotal = 0;

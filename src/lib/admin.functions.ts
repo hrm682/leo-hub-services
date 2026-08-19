@@ -271,11 +271,13 @@ export const upsertProductAdmin = createServerFn({ method: "POST" })
       billing_label: data.billingLabel,
       is_active: data.isActive,
       is_featured: data.isFeatured,
+      stock: data.stock,
     };
 
+    const db = supabase as unknown as SupabaseClient;
     const { error } = data.id
-      ? await supabase.from("products").update(payload).eq("id", data.id)
-      : await supabase.from("products").insert(payload);
+      ? await db.from("products").update(payload).eq("id", data.id)
+      : await db.from("products").insert(payload);
     if (error) throw new Error("No se pudo guardar el producto: " + error.message);
 
     await supabase.from("audit_logs").insert({
@@ -299,10 +301,13 @@ export const listProductsAdmin = createServerFn({ method: "GET" })
     });
     if (!isAdmin) throw new Error("Solo administradores");
 
+    const db = supabase as unknown as SupabaseClient;
     const [{ data: products }, { data: categories }] = await Promise.all([
-      supabase
+      db
         .from("products")
-        .select("id, category_id, name, slug, short_description, description, benefits, image_url, price, duration_days, billing_label, is_active, is_featured")
+        .select(
+          "id, category_id, name, slug, short_description, description, benefits, image_url, price, duration_days, billing_label, is_active, is_featured, stock",
+        )
         .order("created_at", { ascending: false }),
       supabase.from("categories").select("id, name").order("sort_order"),
     ]);

@@ -47,7 +47,7 @@ export async function activateOrderServices(
 ): Promise<void> {
   const { data: items } = await db
     .from("order_items")
-    .select("id, customer_service_id, duration_days, service_name")
+    .select("id, customer_service_id, duration_days, service_name, product_id, quantity")
     .eq("order_id", order.id);
 
   const { data: services } = await db
@@ -69,7 +69,17 @@ export async function activateOrderServices(
     customer_service_id: string | null;
     duration_days: number;
     service_name: string;
+    product_id: string | null;
+    quantity: number;
   }[]) {
+    // Inventario: una compra consume stock; una renovación no (es la misma cuenta).
+    if (order.kind !== "renovacion" && item.product_id) {
+      await db.rpc("decrement_product_stock", {
+        _product_id: item.product_id,
+        _qty: item.quantity ?? 1,
+      });
+    }
+
     const targetId = item.customer_service_id ?? byOrderItem.get(item.id)?.id;
     if (!targetId) continue;
     const current = ((services ?? []) as { id: string; expiration_date: string | null }[]).find(
