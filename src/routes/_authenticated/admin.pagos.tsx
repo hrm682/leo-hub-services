@@ -1,14 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, FileImage, Loader2, XCircle } from "lucide-react";
+import { CheckCircle2, FileImage, Loader2, RefreshCw, XCircle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import {
-  getFileSignedUrl,
-  listPaymentsAdmin,
-  reviewPayment,
-} from "@/lib/admin.functions";
+import { getFileSignedUrl, listPaymentsAdmin, reviewPayment } from "@/lib/admin.functions";
+import { verifyBinancePayOrder } from "@/lib/binancepay.functions";
 import { fmtDateTime, fmtUSD } from "@/lib/format";
 import {
   PAYMENT_PROVIDER_LABELS,
@@ -45,10 +42,7 @@ import { Textarea } from "@/components/ui/textarea";
 
 export const Route = createFileRoute("/_authenticated/admin/pagos")({
   head: () => ({
-    meta: [
-      { title: "Pagos — LoMaximoLeo Admin" },
-      { name: "robots", content: "noindex" },
-    ],
+    meta: [{ title: "Pagos — LoMaximoLeo Admin" }, { name: "robots", content: "noindex" }],
   }),
   component: PagosPage,
 });
@@ -89,6 +83,26 @@ function PagosPage() {
     },
     onError: (err) => {
       toast.error("No se pudo procesar", { description: err.message });
+    },
+  });
+
+  const verifyMutation = useMutation({
+    mutationFn: (orderId: string) => verifyBinancePayOrder({ data: { orderId } }),
+    onSuccess: (result) => {
+      if (result.status === "PAID") {
+        toast.success("Pago confirmado en Binance", {
+          description: "La orden quedó pagada y el servicio activado.",
+        });
+        queryClient.invalidateQueries({ queryKey: ["admin-pagos"] });
+        queryClient.invalidateQueries({ queryKey: ["admin-metrics"] });
+      } else {
+        toast.info("Binance aún no reporta el pago", {
+          description: `Estado actual: ${result.status}. Intenta de nuevo en unos segundos.`,
+        });
+      }
+    },
+    onError: (err) => {
+      toast.error("No se pudo verificar en Binance", { description: err.message });
     },
   });
 
@@ -207,6 +221,22 @@ function PagosPage() {
                     <td className="px-4 py-3">
                       {p.status === "pendiente" && (
                         <div className="flex justify-end gap-2">
+                          {p.provider === "binance_pay" && p.order?.id && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="border-primary/40 text-primary hover:bg-primary/10"
+                              onClick={() => verifyMutation.mutate(p.order!.id)}
+                              disabled={verifyMutation.isPending}
+                            >
+                              {verifyMutation.isPending ? (
+                                <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                              ) : (
+                                <RefreshCw className="mr-1.5 h-3.5 w-3.5" />
+                              )}
+                              Verificar en Binance
+                            </Button>
+                          )}
                           <Button
                             size="sm"
                             variant="outline"
