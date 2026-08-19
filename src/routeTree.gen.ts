@@ -28,6 +28,8 @@ import { Route as AuthenticatedAdminTicketsRouteImport } from './routes/_authent
 import { Route as AuthenticatedPagoOrderIdRouteImport } from './routes/_authenticated/pago.$orderId'
 import { Route as AuthenticatedPortalIndexRouteImport } from './routes/_authenticated/portal.index'
 import { Route as AuthenticatedPortalCuentaRouteImport } from './routes/_authenticated/portal.cuenta'
+import { Route as AuthenticatedPortalCuentaIndexRouteImport } from './routes/_authenticated/portal.cuenta.index'
+import { Route as AuthenticatedPortalCuentaPrivadaRouteImport } from './routes/_authenticated/portal.cuenta.privada'
 import { Route as AuthenticatedPortalServicioIdRouteImport } from './routes/_authenticated/portal.servicio.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -132,6 +134,18 @@ const AuthenticatedPortalCuentaRoute =
     path: '/cuenta',
     getParentRoute: () => AuthenticatedPortalRoute,
   } as any)
+const AuthenticatedPortalCuentaIndexRoute =
+  AuthenticatedPortalCuentaIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedPortalCuentaRoute,
+  } as any)
+const AuthenticatedPortalCuentaPrivadaRoute =
+  AuthenticatedPortalCuentaPrivadaRouteImport.update({
+    id: '/privada',
+    path: '/privada',
+    getParentRoute: () => AuthenticatedPortalCuentaRoute,
+  } as any)
 const AuthenticatedPortalServicioIdRoute =
   AuthenticatedPortalServicioIdRouteImport.update({
     id: '/servicio/$id',
@@ -155,10 +169,12 @@ export interface FileRoutesByFullPath {
   '/admin/productos': typeof AuthenticatedAdminProductosRoute
   '/admin/tickets': typeof AuthenticatedAdminTicketsRoute
   '/pago/$orderId': typeof AuthenticatedPagoOrderIdRoute
-  '/portal/cuenta': typeof AuthenticatedPortalCuentaRoute
+  '/portal/cuenta': typeof AuthenticatedPortalCuentaRouteWithChildren
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/portal/': typeof AuthenticatedPortalIndexRoute
+  '/portal/cuenta/privada': typeof AuthenticatedPortalCuentaPrivadaRoute
   '/portal/servicio/$id': typeof AuthenticatedPortalServicioIdRoute
+  '/portal/cuenta/': typeof AuthenticatedPortalCuentaIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -174,10 +190,11 @@ export interface FileRoutesByTo {
   '/admin/productos': typeof AuthenticatedAdminProductosRoute
   '/admin/tickets': typeof AuthenticatedAdminTicketsRoute
   '/pago/$orderId': typeof AuthenticatedPagoOrderIdRoute
-  '/portal/cuenta': typeof AuthenticatedPortalCuentaRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/portal': typeof AuthenticatedPortalIndexRoute
+  '/portal/cuenta/privada': typeof AuthenticatedPortalCuentaPrivadaRoute
   '/portal/servicio/$id': typeof AuthenticatedPortalServicioIdRoute
+  '/portal/cuenta': typeof AuthenticatedPortalCuentaIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -197,10 +214,12 @@ export interface FileRoutesById {
   '/_authenticated/admin/productos': typeof AuthenticatedAdminProductosRoute
   '/_authenticated/admin/tickets': typeof AuthenticatedAdminTicketsRoute
   '/_authenticated/pago/$orderId': typeof AuthenticatedPagoOrderIdRoute
-  '/_authenticated/portal/cuenta': typeof AuthenticatedPortalCuentaRoute
+  '/_authenticated/portal/cuenta': typeof AuthenticatedPortalCuentaRouteWithChildren
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/portal/': typeof AuthenticatedPortalIndexRoute
+  '/_authenticated/portal/cuenta/privada': typeof AuthenticatedPortalCuentaPrivadaRoute
   '/_authenticated/portal/servicio/$id': typeof AuthenticatedPortalServicioIdRoute
+  '/_authenticated/portal/cuenta/': typeof AuthenticatedPortalCuentaIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -223,7 +242,9 @@ export interface FileRouteTypes {
     | '/portal/cuenta'
     | '/admin/'
     | '/portal/'
+    | '/portal/cuenta/privada'
     | '/portal/servicio/$id'
+    | '/portal/cuenta/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -239,10 +260,11 @@ export interface FileRouteTypes {
     | '/admin/productos'
     | '/admin/tickets'
     | '/pago/$orderId'
-    | '/portal/cuenta'
     | '/admin'
     | '/portal'
+    | '/portal/cuenta/privada'
     | '/portal/servicio/$id'
+    | '/portal/cuenta'
   id:
     | '__root__'
     | '/'
@@ -264,7 +286,9 @@ export interface FileRouteTypes {
     | '/_authenticated/portal/cuenta'
     | '/_authenticated/admin/'
     | '/_authenticated/portal/'
+    | '/_authenticated/portal/cuenta/privada'
     | '/_authenticated/portal/servicio/$id'
+    | '/_authenticated/portal/cuenta/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -411,6 +435,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPortalCuentaRouteImport
       parentRoute: typeof AuthenticatedPortalRoute
     }
+    '/_authenticated/portal/cuenta/': {
+      id: '/_authenticated/portal/cuenta/'
+      path: '/'
+      fullPath: '/portal/cuenta/'
+      preLoaderRoute: typeof AuthenticatedPortalCuentaIndexRouteImport
+      parentRoute: typeof AuthenticatedPortalCuentaRoute
+    }
+    '/_authenticated/portal/cuenta/privada': {
+      id: '/_authenticated/portal/cuenta/privada'
+      path: '/privada'
+      fullPath: '/portal/cuenta/privada'
+      preLoaderRoute: typeof AuthenticatedPortalCuentaPrivadaRouteImport
+      parentRoute: typeof AuthenticatedPortalCuentaRoute
+    }
     '/_authenticated/portal/servicio/$id': {
       id: '/_authenticated/portal/servicio/$id'
       path: '/servicio/$id'
@@ -444,14 +482,31 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
 const AuthenticatedAdminRouteWithChildren =
   AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
 
+interface AuthenticatedPortalCuentaRouteChildren {
+  AuthenticatedPortalCuentaPrivadaRoute: typeof AuthenticatedPortalCuentaPrivadaRoute
+  AuthenticatedPortalCuentaIndexRoute: typeof AuthenticatedPortalCuentaIndexRoute
+}
+
+const AuthenticatedPortalCuentaRouteChildren: AuthenticatedPortalCuentaRouteChildren =
+  {
+    AuthenticatedPortalCuentaPrivadaRoute:
+      AuthenticatedPortalCuentaPrivadaRoute,
+    AuthenticatedPortalCuentaIndexRoute: AuthenticatedPortalCuentaIndexRoute,
+  }
+
+const AuthenticatedPortalCuentaRouteWithChildren =
+  AuthenticatedPortalCuentaRoute._addFileChildren(
+    AuthenticatedPortalCuentaRouteChildren,
+  )
+
 interface AuthenticatedPortalRouteChildren {
-  AuthenticatedPortalCuentaRoute: typeof AuthenticatedPortalCuentaRoute
+  AuthenticatedPortalCuentaRoute: typeof AuthenticatedPortalCuentaRouteWithChildren
   AuthenticatedPortalIndexRoute: typeof AuthenticatedPortalIndexRoute
   AuthenticatedPortalServicioIdRoute: typeof AuthenticatedPortalServicioIdRoute
 }
 
 const AuthenticatedPortalRouteChildren: AuthenticatedPortalRouteChildren = {
-  AuthenticatedPortalCuentaRoute: AuthenticatedPortalCuentaRoute,
+  AuthenticatedPortalCuentaRoute: AuthenticatedPortalCuentaRouteWithChildren,
   AuthenticatedPortalIndexRoute: AuthenticatedPortalIndexRoute,
   AuthenticatedPortalServicioIdRoute: AuthenticatedPortalServicioIdRoute,
 }
