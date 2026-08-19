@@ -5,6 +5,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import {
   productInputSchema,
   reviewPaymentSchema,
+  savedReplySchema,
   serviceCredentialsSchema,
   ticketMessageSchema,
 } from "@/lib/schemas";
@@ -444,11 +445,15 @@ export const replyTicketAdmin = createServerFn({ method: "POST" })
       .maybeSingle();
     if (!ticket) throw new Error("Ticket no encontrado");
 
+    if (data.attachmentPath && !data.attachmentPath.startsWith(`${ticket.user_id}/`))
+      throw new Error("Ruta de adjunto inválida");
+
     const { error } = await supabase.from("ticket_messages").insert({
       ticket_id: ticket.id,
       sender_id: userId,
       message: data.message,
       is_internal_note: data.isInternalNote,
+      attachment_path: data.attachmentPath || null,
     });
     if (error) throw new Error("No se pudo enviar la respuesta");
 
