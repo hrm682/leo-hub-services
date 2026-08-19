@@ -45,6 +45,16 @@ export const Route = createFileRoute("/_authenticated/admin/productos")({
 });
 
 const IMAGE_PRESETS = [
+  { value: "/images/products/netflix.jpg", label: "Netflix" },
+  { value: "/images/products/disney.jpg", label: "Disney+" },
+  { value: "/images/products/hbomax.jpg", label: "HBO Max" },
+  { value: "/images/products/primevideo.jpg", label: "Prime Video" },
+  { value: "/images/products/paramount.jpg", label: "Paramount+" },
+  { value: "/images/products/vix.jpg", label: "ViX" },
+  { value: "/images/products/directvgo.jpg", label: "DirecTV GO" },
+  { value: "/images/products/youtube.jpg", label: "YouTube" },
+  { value: "/images/products/spotify.jpg", label: "Spotify" },
+  { value: "/images/products/combo.jpg", label: "Combo" },
   { value: "/images/products/streaming.jpg", label: "Streaming" },
   { value: "/images/products/musica.jpg", label: "Música" },
   { value: "/images/products/vpn.jpg", label: "VPN" },
