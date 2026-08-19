@@ -132,3 +132,9 @@ export const productInputSchema = z.object({
   isActive: z.boolean(),
   isFeatured: z.boolean(),
 });
+
+export const savedReplySchema = z.object({
+  id: z.string().uuid().optional(),
+  title: z.string().trim().min(2, "Ingresa un título").max(80, "Máximo 80 caracteres"),
+  content: z.string().trim().min(5, "Escribe el contenido").max(2000, "Máximo 2000 caracteres"),
+});
