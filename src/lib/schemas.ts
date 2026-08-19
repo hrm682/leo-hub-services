@@ -73,13 +73,7 @@ export const serviceCredentialsSchema = z.object({
     .string()
     .trim()
     .regex(/^\d{4,8}$/, "El PIN debe tener de 4 a 8 dígitos"),
-  accountEmail: z
-    .string()
-    .trim()
-    .email("Correo inválido")
-    .max(255)
-    .optional()
-    .or(z.literal("")),
+  accountEmail: z.string().trim().email("Correo inválido").max(255).optional().or(z.literal("")),
 });
 
 export const ticketMessageSchema = z.object({
@@ -138,3 +132,21 @@ export const savedReplySchema = z.object({
   title: z.string().trim().min(2, "Ingresa un título").max(80, "Máximo 80 caracteres"),
   content: z.string().trim().min(5, "Escribe el contenido").max(2000, "Máximo 2000 caracteres"),
 });
+
+// --- Panel de agentes ---
+export const assignAgentSchema = z.object({
+  clientId: z.string().uuid(),
+  agentId: z.string().uuid(),
+  note: z.string().trim().max(300).optional(),
+});
+
+export const clientIdSchema = z.object({ clientId: z.string().uuid() });
+
+export const logInteractionSchema = z.object({
+  clientId: z.string().uuid(),
+  type: z.enum(["nota", "llamada", "seguimiento"]),
+  summary: z.string().trim().min(3, "Describe la interacción").max(500),
+});
+
+// --- Pago Binance Pay (automático) ---
+export const binancePayOrderSchema = z.object({ orderId: z.string().uuid() });

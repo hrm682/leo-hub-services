@@ -19,6 +19,7 @@ import { Route as AuthenticatedCheckoutRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedPortalRouteImport } from './routes/_authenticated/portal'
 import { Route as ServicioSlugRouteImport } from './routes/servicio.$slug'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedAdminAgentesRouteImport } from './routes/_authenticated/admin.agentes'
 import { Route as AuthenticatedAdminClientesRouteImport } from './routes/_authenticated/admin.clientes'
 import { Route as AuthenticatedAdminNotificacionesRouteImport } from './routes/_authenticated/admin.notificaciones'
 import { Route as AuthenticatedAdminOrdenesRouteImport } from './routes/_authenticated/admin.ordenes'
@@ -81,6 +82,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminAgentesRoute =
+  AuthenticatedAdminAgentesRouteImport.update({
+    id: '/agentes',
+    path: '/agentes',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminClientesRoute =
   AuthenticatedAdminClientesRouteImport.update({
     id: '/clientes',
@@ -162,6 +169,7 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof AuthenticatedCheckoutRoute
   '/portal': typeof AuthenticatedPortalRouteWithChildren
   '/servicio/$slug': typeof ServicioSlugRoute
+  '/admin/agentes': typeof AuthenticatedAdminAgentesRoute
   '/admin/clientes': typeof AuthenticatedAdminClientesRoute
   '/admin/notificaciones': typeof AuthenticatedAdminNotificacionesRoute
   '/admin/ordenes': typeof AuthenticatedAdminOrdenesRoute
@@ -183,6 +191,7 @@ export interface FileRoutesByTo {
   '/catalogo': typeof CatalogoRoute
   '/checkout': typeof AuthenticatedCheckoutRoute
   '/servicio/$slug': typeof ServicioSlugRoute
+  '/admin/agentes': typeof AuthenticatedAdminAgentesRoute
   '/admin/clientes': typeof AuthenticatedAdminClientesRoute
   '/admin/notificaciones': typeof AuthenticatedAdminNotificacionesRoute
   '/admin/ordenes': typeof AuthenticatedAdminOrdenesRoute
@@ -207,6 +216,7 @@ export interface FileRoutesById {
   '/_authenticated/checkout': typeof AuthenticatedCheckoutRoute
   '/_authenticated/portal': typeof AuthenticatedPortalRouteWithChildren
   '/servicio/$slug': typeof ServicioSlugRoute
+  '/_authenticated/admin/agentes': typeof AuthenticatedAdminAgentesRoute
   '/_authenticated/admin/clientes': typeof AuthenticatedAdminClientesRoute
   '/_authenticated/admin/notificaciones': typeof AuthenticatedAdminNotificacionesRoute
   '/_authenticated/admin/ordenes': typeof AuthenticatedAdminOrdenesRoute
@@ -232,6 +242,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/portal'
     | '/servicio/$slug'
+    | '/admin/agentes'
     | '/admin/clientes'
     | '/admin/notificaciones'
     | '/admin/ordenes'
@@ -253,6 +264,7 @@ export interface FileRouteTypes {
     | '/catalogo'
     | '/checkout'
     | '/servicio/$slug'
+    | '/admin/agentes'
     | '/admin/clientes'
     | '/admin/notificaciones'
     | '/admin/ordenes'
@@ -276,6 +288,7 @@ export interface FileRouteTypes {
     | '/_authenticated/checkout'
     | '/_authenticated/portal'
     | '/servicio/$slug'
+    | '/_authenticated/admin/agentes'
     | '/_authenticated/admin/clientes'
     | '/_authenticated/admin/notificaciones'
     | '/_authenticated/admin/ordenes'
@@ -372,6 +385,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/agentes': {
+      id: '/_authenticated/admin/agentes'
+      path: '/agentes'
+      fullPath: '/admin/agentes'
+      preLoaderRoute: typeof AuthenticatedAdminAgentesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/clientes': {
       id: '/_authenticated/admin/clientes'
       path: '/clientes'
@@ -460,6 +480,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminAgentesRoute: typeof AuthenticatedAdminAgentesRoute
   AuthenticatedAdminClientesRoute: typeof AuthenticatedAdminClientesRoute
   AuthenticatedAdminNotificacionesRoute: typeof AuthenticatedAdminNotificacionesRoute
   AuthenticatedAdminOrdenesRoute: typeof AuthenticatedAdminOrdenesRoute
@@ -470,6 +491,7 @@ interface AuthenticatedAdminRouteChildren {
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminAgentesRoute: AuthenticatedAdminAgentesRoute,
   AuthenticatedAdminClientesRoute: AuthenticatedAdminClientesRoute,
   AuthenticatedAdminNotificacionesRoute: AuthenticatedAdminNotificacionesRoute,
   AuthenticatedAdminOrdenesRoute: AuthenticatedAdminOrdenesRoute,

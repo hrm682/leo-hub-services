@@ -1,4 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
@@ -131,49 +132,13 @@ export const reviewPayment = createServerFn({ method: "POST" })
     if (data.approve) {
       await supabase.from("orders").update({ status: "pagada" }).eq("id", order.id);
 
-      const { data: services } = await supabase
-        .from("customer_services")
-        .select("id, status, expiration_date, order_item_id")
-        .eq("user_id", order.user_id);
-      const byOrderItem = new Map((services ?? []).map((s) => [s.order_item_id, s]));
-
-      for (const item of items ?? []) {
-        const targetId = item.customer_service_id ?? byOrderItem.get(item.id)?.id;
-        if (!targetId) continue;
-        const current = (services ?? []).find((s) => s.id === targetId);
-
-        const now = new Date();
-        let start = now;
-        if (order.kind === "renovacion" && current?.expiration_date) {
-          const exp = new Date(current.expiration_date);
-          if (exp > now) start = exp;
-        }
-        const expiration = new Date(start.getTime() + item.duration_days * 86_400_000);
-
-        await supabase
-          .from("customer_services")
-          .update({
-            status: "activo",
-            start_date: now.toISOString(),
-            expiration_date: expiration.toISOString(),
-          })
-          .eq("id", targetId);
-
-        await supabase.from("service_events").insert({
-          customer_service_id: targetId,
-          event_type: order.kind === "renovacion" ? "renovacion" : "activacion",
-          description:
-            order.kind === "renovacion"
-              ? `Renovación aprobada. Nuevo vencimiento: ${expiration.toLocaleDateString("es-EC")}.`
-              : "Pago aprobado. Servicio activado.",
-        });
-      }
-
-      await supabase.from("notifications").insert({
+      // Activación/renovación compartida con la confirmación automática de Binance Pay.
+      const { activateOrderServices } = await import("@/lib/order-activation.server");
+      await activateOrderServices(supabase as unknown as SupabaseClient, {
+        id: order.id,
+        order_number: order.order_number,
+        kind: order.kind,
         user_id: order.user_id,
-        type: "pago",
-        title: "Pago aprobado",
-        content: `Tu pago de la orden ${order.order_number} fue aprobado. Tu servicio ya está activo.`,
       });
     } else {
       await supabase.from("orders").update({ status: "rechazada" }).eq("id", order.id);

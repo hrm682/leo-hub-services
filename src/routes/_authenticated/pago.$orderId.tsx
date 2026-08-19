@@ -5,19 +5,23 @@ import {
   ArrowLeft,
   CheckCircle2,
   Copy,
+  ExternalLink,
   FileImage,
   Hourglass,
   LayoutGrid,
   Loader2,
+  QrCode,
   UploadCloud,
   XCircle,
+  Zap,
 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { fmtDateTime, fmtUSD } from "@/lib/format";
 import {
+  BINANCE_PAY_AUTO_STEPS,
   BINANCE_PAY_CURRENCY,
   BINANCE_PAY_ID,
   BINANCE_PAY_NAME,
@@ -25,27 +29,23 @@ import {
   PAYMENT_STEPS,
   RECEIPT_ACCEPT,
 } from "@/lib/payment";
+import { createBinancePayOrder, verifyBinancePayOrder } from "@/lib/binancepay.functions";
 import { orderDetailQueryOptions } from "@/lib/queries";
 import { attachReceipt } from "@/lib/shop.functions";
-import {
-  ORDER_STATUS_LABELS,
-  ORDER_STATUS_TONES,
-} from "@/lib/status";
+import { ORDER_STATUS_LABELS, ORDER_STATUS_TONES } from "@/lib/status";
 import { useSession } from "@/lib/use-session";
 import { StatusBadge } from "@/components/status-badge";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const Route = createFileRoute("/_authenticated/pago/$orderId")({
   loader: ({ context, params }) =>
     context.queryClient.ensureQueryData(orderDetailQueryOptions(params.orderId)),
   head: () => ({
-    meta: [
-      { title: "Pago de orden — LoMaximoLeo" },
-      { name: "robots", content: "noindex" },
-    ],
+    meta: [{ title: "Pago de orden — LoMaximoLeo" }, { name: "robots", content: "noindex" }],
   }),
   component: PaymentPage,
   errorComponent: PaymentError,
@@ -271,8 +271,8 @@ function PaymentContent({
           </div>
           <h2 className="mt-4 font-display text-xl font-bold">Comprobante en revisión</h2>
           <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-            Recibimos tu comprobante y lo estamos verificando. Este proceso suele tomar poco
-            tiempo; te notificaremos al aprobarse.
+            Recibimos tu comprobante y lo estamos verificando. Este proceso suele tomar poco tiempo;
+            te notificaremos al aprobarse.
           </p>
           {payment.transaction_reference && (
             <p className="mt-3 text-xs text-muted-foreground">
@@ -283,104 +283,129 @@ function PaymentContent({
       )}
 
       {payment?.status === "pendiente" && !payment.receipt_path && (
-        <div className="grid gap-6 md:grid-cols-2">
-          <div className="glass card-glow rounded-2xl p-6">
-            <h2 className="font-display text-lg font-bold">1. Paga con Binance Pay</h2>
+        <Tabs defaultValue="auto" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="auto">
+              <Zap className="mr-1.5 h-3.5 w-3.5" />
+              Binance Pay (automático)
+            </TabsTrigger>
+            <TabsTrigger value="manual">
+              <UploadCloud className="mr-1.5 h-3.5 w-3.5" />
+              Comprobante manual
+            </TabsTrigger>
+          </TabsList>
 
-            <div className="mt-4 rounded-xl border border-primary/30 bg-primary/5 p-4">
-              <p className="text-xs uppercase tracking-wider text-muted-foreground">
-                Binance ID de {BINANCE_PAY_NAME}
-              </p>
-              <div className="mt-1.5 flex items-center justify-between gap-2">
-                <p className="font-mono text-lg font-bold tracking-wide text-primary">
-                  {BINANCE_PAY_ID}
-                </p>
-                <Button variant="outline" size="sm" onClick={onCopyId}>
-                  <Copy className="mr-1.5 h-3.5 w-3.5" />
-                  Copiar
-                </Button>
+          <TabsContent value="auto" className="mt-4">
+            <BinancePayMethod orderId={order.id} amount={Number(payment.amount)} />
+          </TabsContent>
+
+          <TabsContent value="manual" className="mt-4">
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="glass card-glow rounded-2xl p-6">
+                <h2 className="font-display text-lg font-bold">1. Paga con Binance Pay</h2>
+
+                <div className="mt-4 rounded-xl border border-primary/30 bg-primary/5 p-4">
+                  <p className="text-xs uppercase tracking-wider text-muted-foreground">
+                    Binance ID de {BINANCE_PAY_NAME}
+                  </p>
+                  <div className="mt-1.5 flex items-center justify-between gap-2">
+                    <p className="font-mono text-lg font-bold tracking-wide text-primary">
+                      {BINANCE_PAY_ID}
+                    </p>
+                    <Button variant="outline" size="sm" onClick={onCopyId}>
+                      <Copy className="mr-1.5 h-3.5 w-3.5" />
+                      Copiar
+                    </Button>
+                  </div>
+                  <p className="mt-3 text-xs text-muted-foreground">Monto exacto a enviar:</p>
+                  <p className="font-display text-2xl font-extrabold text-gold-gradient">
+                    {fmtUSD(Number(payment.amount))}{" "}
+                    <span className="text-sm font-semibold text-muted-foreground">
+                      {BINANCE_PAY_CURRENCY}
+                    </span>
+                  </p>
+                </div>
+
+                <ol className="mt-5 space-y-2.5">
+                  {PAYMENT_STEPS.map((step, i) => (
+                    <li key={step} className="flex items-start gap-3 text-sm">
+                      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/15 text-[11px] font-bold text-primary">
+                        {i + 1}
+                      </span>
+                      <span className="text-muted-foreground">{step}</span>
+                    </li>
+                  ))}
+                </ol>
               </div>
-              <p className="mt-3 text-xs text-muted-foreground">Monto exacto a enviar:</p>
-              <p className="font-display text-2xl font-extrabold text-gold-gradient">
-                {fmtUSD(Number(payment.amount))}{" "}
-                <span className="text-sm font-semibold text-muted-foreground">
-                  {BINANCE_PAY_CURRENCY}
-                </span>
-              </p>
+
+              <div className="glass rounded-2xl p-6">
+                <h2 className="font-display text-lg font-bold">2. Sube tu comprobante</h2>
+                <form onSubmit={onSubmit} className="mt-4 space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="receipt">Captura del pago</Label>
+                    <input
+                      ref={fileInputRef}
+                      id="receipt"
+                      type="file"
+                      accept={RECEIPT_ACCEPT}
+                      className="hidden"
+                      onChange={(e) => onPickFile(e.target.files?.[0] ?? null)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="flex w-full flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-secondary/30 px-4 py-8 text-center transition-colors hover:border-primary/40 hover:bg-secondary/50"
+                    >
+                      {file ? (
+                        <>
+                          <FileImage className="h-7 w-7 text-primary" />
+                          <span className="max-w-full truncate text-sm font-semibold">
+                            {file.name}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            Toca para cambiar el archivo
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <UploadCloud className="h-7 w-7 text-muted-foreground" />
+                          <span className="text-sm font-semibold">Seleccionar archivo</span>
+                          <span className="text-xs text-muted-foreground">
+                            Imagen o PDF · máximo 8 MB
+                          </span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="reference">Referencia de transacción (opcional)</Label>
+                    <Input
+                      id="reference"
+                      value={reference}
+                      onChange={(e) => onReferenceChange(e.target.value)}
+                      placeholder="ID de la transacción en Binance"
+                      maxLength={120}
+                    />
+                  </div>
+
+                  <Button
+                    type="submit"
+                    className="w-full font-semibold"
+                    disabled={sending || !file}
+                  >
+                    {sending ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <UploadCloud className="mr-2 h-4 w-4" />
+                    )}
+                    {sending ? "Enviando…" : "Enviar comprobante"}
+                  </Button>
+                </form>
+              </div>
             </div>
-
-            <ol className="mt-5 space-y-2.5">
-              {PAYMENT_STEPS.map((step, i) => (
-                <li key={step} className="flex items-start gap-3 text-sm">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/15 text-[11px] font-bold text-primary">
-                    {i + 1}
-                  </span>
-                  <span className="text-muted-foreground">{step}</span>
-                </li>
-              ))}
-            </ol>
-          </div>
-
-          <div className="glass rounded-2xl p-6">
-            <h2 className="font-display text-lg font-bold">2. Sube tu comprobante</h2>
-            <form onSubmit={onSubmit} className="mt-4 space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="receipt">Captura del pago</Label>
-                <input
-                  ref={fileInputRef}
-                  id="receipt"
-                  type="file"
-                  accept={RECEIPT_ACCEPT}
-                  className="hidden"
-                  onChange={(e) => onPickFile(e.target.files?.[0] ?? null)}
-                />
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="flex w-full flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-secondary/30 px-4 py-8 text-center transition-colors hover:border-primary/40 hover:bg-secondary/50"
-                >
-                  {file ? (
-                    <>
-                      <FileImage className="h-7 w-7 text-primary" />
-                      <span className="max-w-full truncate text-sm font-semibold">{file.name}</span>
-                      <span className="text-xs text-muted-foreground">
-                        Toca para cambiar el archivo
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <UploadCloud className="h-7 w-7 text-muted-foreground" />
-                      <span className="text-sm font-semibold">Seleccionar archivo</span>
-                      <span className="text-xs text-muted-foreground">
-                        Imagen o PDF · máximo 8 MB
-                      </span>
-                    </>
-                  )}
-                </button>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="reference">Referencia de transacción (opcional)</Label>
-                <Input
-                  id="reference"
-                  value={reference}
-                  onChange={(e) => onReferenceChange(e.target.value)}
-                  placeholder="ID de la transacción en Binance"
-                  maxLength={120}
-                />
-              </div>
-
-              <Button type="submit" className="w-full font-semibold" disabled={sending || !file}>
-                {sending ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <UploadCloud className="mr-2 h-4 w-4" />
-                )}
-                {sending ? "Enviando…" : "Enviar comprobante"}
-              </Button>
-            </form>
-          </div>
-        </div>
+          </TabsContent>
+        </Tabs>
       )}
 
       {!payment && (
@@ -393,7 +418,10 @@ function PaymentContent({
         <h2 className="font-display text-lg font-bold">Detalle de la orden</h2>
         <ul className="mt-4 divide-y divide-border/60 text-sm">
           {order.order_items.map((item) => (
-            <li key={item.id} className="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0">
+            <li
+              key={item.id}
+              className="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0"
+            >
               <div>
                 <p className="font-semibold">{item.service_name}</p>
                 <p className="text-xs text-muted-foreground">
@@ -423,6 +451,164 @@ function PaymentContent({
           </div>
         </dl>
       </div>
+    </div>
+  );
+}
+
+/** Método de pago automático con Binance Pay: crea la orden, abre la pasarela y verifica. */
+function BinancePayMethod({ orderId, amount }: { orderId: string; amount: number }) {
+  const queryClient = useQueryClient();
+  const createFn = useServerFn(createBinancePayOrder);
+  const verifyFn = useServerFn(verifyBinancePayOrder);
+
+  const [links, setLinks] = useState<{
+    checkoutUrl: string;
+    qrContent: string;
+    deeplink: string;
+    universalUrl: string;
+  } | null>(null);
+  const [creating, setCreating] = useState(false);
+  const [verifying, setVerifying] = useState(false);
+
+  async function onConfirmed() {
+    toast.success("Pago confirmado", {
+      description: "Tu servicio se activó automáticamente. ¡Gracias!",
+    });
+    await queryClient.invalidateQueries({ queryKey: ["orden", orderId] });
+    await queryClient.invalidateQueries({ queryKey: ["portal"] });
+  }
+
+  async function start() {
+    setCreating(true);
+    try {
+      const result = await createFn({ data: { orderId } });
+      setLinks(result);
+      window.open(result.checkoutUrl, "_blank", "noopener,noreferrer");
+      toast.info("Abrimos Binance Pay en otra pestaña", {
+        description: "Completa el pago y vuelve aquí para confirmar.",
+      });
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "No se pudo iniciar el pago con Binance Pay",
+      );
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  async function verify(manual: boolean) {
+    if (manual) setVerifying(true);
+    try {
+      const result = await verifyFn({ data: { orderId } });
+      if (result.status === "PAID") {
+        await onConfirmed();
+      } else if (manual) {
+        toast.info("Aún no recibimos el pago", {
+          description: "Si ya pagaste, espera unos segundos y vuelve a verificar.",
+        });
+      }
+    } catch (error) {
+      if (manual) {
+        toast.error(error instanceof Error ? error.message : "No se pudo verificar el pago");
+      }
+    } finally {
+      if (manual) setVerifying(false);
+    }
+  }
+
+  // Sondeo silencioso mientras la orden Binance está activa.
+  useEffect(() => {
+    if (!links) return;
+    let attempts = 0;
+    const id = setInterval(() => {
+      attempts += 1;
+      if (attempts > 75) {
+        clearInterval(id);
+        return;
+      }
+      void verify(false);
+    }, 4000);
+    return () => clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [links, orderId]);
+
+  return (
+    <div className="glass card-glow rounded-2xl p-6">
+      <div className="flex items-center gap-2">
+        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/15">
+          <Zap className="h-5 w-5 text-primary" />
+        </div>
+        <div>
+          <h2 className="font-display text-lg font-bold">Pago automático con Binance Pay</h2>
+          <p className="text-xs text-muted-foreground">
+            Sin comprobante. Tu servicio se activa al confirmarse el pago.
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-4 rounded-xl border border-primary/30 bg-primary/5 p-4 text-center">
+        <p className="text-xs uppercase tracking-wider text-muted-foreground">Monto a pagar</p>
+        <p className="font-display text-2xl font-extrabold text-gold-gradient">
+          {fmtUSD(amount)}{" "}
+          <span className="text-sm font-semibold text-muted-foreground">
+            {BINANCE_PAY_CURRENCY}
+          </span>
+        </p>
+      </div>
+
+      {!links ? (
+        <>
+          <ol className="mt-5 space-y-2.5">
+            {BINANCE_PAY_AUTO_STEPS.map((step, i) => (
+              <li key={step} className="flex items-start gap-3 text-sm">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/15 text-[11px] font-bold text-primary">
+                  {i + 1}
+                </span>
+                <span className="text-muted-foreground">{step}</span>
+              </li>
+            ))}
+          </ol>
+          <Button className="mt-5 w-full font-semibold" onClick={start} disabled={creating}>
+            {creating ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Zap className="mr-2 h-4 w-4" />
+            )}
+            {creating ? "Generando orden…" : "Pagar con Binance Pay"}
+          </Button>
+        </>
+      ) : (
+        <div className="mt-5 space-y-4">
+          <div className="flex items-center justify-center gap-2 rounded-xl border border-info/30 bg-info/10 px-4 py-3 text-sm text-info">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Esperando la confirmación del pago…
+          </div>
+
+          <div className="grid gap-2 sm:grid-cols-2">
+            <Button variant="outline" asChild>
+              <a href={links.checkoutUrl} target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="mr-2 h-4 w-4" />
+                Abrir Binance Pay
+              </a>
+            </Button>
+            <Button onClick={() => verify(true)} disabled={verifying}>
+              {verifying ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <CheckCircle2 className="mr-2 h-4 w-4" />
+              )}
+              {verifying ? "Verificando…" : "Ya pagué / Verificar"}
+            </Button>
+          </div>
+
+          {links.qrContent && (
+            <p className="flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
+              <QrCode className="h-3.5 w-3.5" />
+              También puedes escanear el QR desde la pestaña de Binance con tu app.
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -113,6 +113,7 @@ export const TICKET_PRIORITY_TONES: Record<string, Tone> = {
 
 export const PAYMENT_PROVIDER_LABELS: Record<string, string> = {
   binance_manual: "Binance (pago manual)",
+  binance_pay: "Binance Pay (automático)",
   payphone: "Payphone",
 };
 

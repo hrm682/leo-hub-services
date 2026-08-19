@@ -16,3 +16,11 @@ export const PAYMENT_STEPS: string[] = [
 
 export const MAX_RECEIPT_BYTES = 8 * 1024 * 1024;
 export const RECEIPT_ACCEPT = "image/*,application/pdf";
+
+/** Pasos del método automático con Binance Pay (sin comprobante manual). */
+export const BINANCE_PAY_AUTO_STEPS: string[] = [
+  "Toca “Pagar con Binance Pay” para generar tu orden.",
+  "Se abre la pasarela de Binance (o escanea el QR con tu app).",
+  "Confirma el pago en tu cuenta de Binance.",
+  "Vuelve aquí: verificamos el pago y activamos tu servicio al instante.",
+];
