@@ -21,4 +21,6 @@ as $$
   where id = _product_id and stock is not null;
 $$;
 
-grant execute on function public.decrement_product_stock(uuid, int) to authenticated, service_role;
+-- Solo el servidor (service_role) puede descontar stock; nunca los clientes,
+-- para que un usuario autenticado no pueda sabotear el inventario vía RPC.
+grant execute on function public.decrement_product_stock(uuid, int) to service_role;

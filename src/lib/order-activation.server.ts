@@ -62,6 +62,11 @@ export async function activateOrderServices(
     ]),
   );
 
+  // El descuento de stock corre SIEMPRE con service_role (la RPC solo la puede
+  // ejecutar el servidor), sin importar con qué cliente se llamó este helper.
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const adminDb = supabaseAdmin as unknown as SupabaseClient;
+
   const now = new Date();
 
   for (const item of (items ?? []) as {
@@ -74,7 +79,7 @@ export async function activateOrderServices(
   }[]) {
     // Inventario: una compra consume stock; una renovación no (es la misma cuenta).
     if (order.kind !== "renovacion" && item.product_id) {
-      await db.rpc("decrement_product_stock", {
+      await adminDb.rpc("decrement_product_stock", {
         _product_id: item.product_id,
         _qty: item.quantity ?? 1,
       });
