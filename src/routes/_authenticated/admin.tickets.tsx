@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, Loader2, Lock, Send, Star } from "lucide-react";
-import { useState } from "react";
+import { ArrowLeft, Loader2, Lock, Paperclip, Send, Star, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import {
@@ -9,6 +9,9 @@ import {
   replyTicketAdmin,
   setTicketStatusAdmin,
 } from "@/lib/admin.functions";
+import { supabase } from "@/integrations/supabase/client";
+import { SavedRepliesMenu } from "@/components/admin/SavedReplies";
+import { TicketAttachment } from "@/components/admin/TicketAttachment";
 import { getTicketDetail } from "@/lib/portal.functions";
 import { fmtDateTime } from "@/lib/format";
 import {
@@ -54,6 +57,10 @@ function TicketsPage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [reply, setReply] = useState("");
   const [isInternalNote, setIsInternalNote] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [live, setLive] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
   const { data: listData, isLoading: listLoading } = useQuery({
     queryKey: ["admin-tickets"],
@@ -67,10 +74,35 @@ function TicketsPage() {
   });
 
   const replyMutation = useMutation({
-    mutationFn: (input: { ticketId: string; message: string; isInternalNote: boolean }) =>
-      replyTicketAdmin({ data: input }),
+    mutationFn: async (input: {
+      ticketId: string;
+      ownerUserId: string;
+      message: string;
+      isInternalNote: boolean;
+      file: File | null;
+    }) => {
+      let attachmentPath: string | undefined;
+      if (input.file) {
+        const safeName = input.file.name.replace(/[^\w.-]+/g, "_").slice(-80);
+        const path = `${input.ownerUserId}/admin-${Date.now()}-${safeName}`;
+        const { error } = await supabase.storage
+          .from("adjuntos")
+          .upload(path, input.file, input.file.type ? { contentType: input.file.type } : undefined);
+        if (error) throw new Error("No se pudo subir el adjunto");
+        attachmentPath = path;
+      }
+      return replyTicketAdmin({
+        data: {
+          ticketId: input.ticketId,
+          message: input.message,
+          isInternalNote: input.isInternalNote,
+          attachmentPath,
+        },
+      });
+    },
     onSuccess: () => {
       setReply("");
+      setFile(null);
       setIsInternalNote(false);
       queryClient.invalidateQueries({ queryKey: ["admin-ticket", selectedId] });
       queryClient.invalidateQueries({ queryKey: ["admin-tickets"] });
@@ -92,6 +124,43 @@ function TicketsPage() {
     onError: (err) => toast.error("No se pudo actualizar", { description: err.message }),
   });
 
+  // Chat en vivo: escucha cambios de tickets y mensajes nuevos en tiempo real.
+  useEffect(() => {
+    const channel = supabase
+      .channel("admin-tickets-live")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "support_tickets" },
+        () => queryClient.invalidateQueries({ queryKey: ["admin-tickets"] }),
+      )
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "ticket_messages" },
+        (payload) => {
+          const row = payload.new as { ticket_id?: string; sender_id?: string };
+          queryClient.invalidateQueries({ queryKey: ["admin-tickets"] });
+          if (row.ticket_id) {
+            queryClient.invalidateQueries({ queryKey: ["admin-ticket", row.ticket_id] });
+          }
+          if (row.sender_id && row.sender_id !== user?.id) {
+            toast.info("Nuevo mensaje de un cliente", {
+              description: "La conversación se actualizó en vivo.",
+            });
+          }
+        },
+      )
+      .subscribe((status) => setLive(status === "SUBSCRIBED"));
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient, user?.id]);
+
+  const messageCount = detail?.messages?.length ?? 0;
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [messageCount]);
+
   const tickets = (listData?.tickets ?? []).filter(
     (t) => statusFilter === "todos" || t.status === statusFilter,
   );
@@ -100,11 +169,34 @@ function TicketsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">Tickets</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Bandeja de soporte. Responde, cambia estados y deja notas internas.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="font-display text-2xl font-bold tracking-tight sm:text-3xl">Tickets</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Chat de soporte en vivo. Responde, adjunta archivos y usa respuestas guardadas.
+          </p>
+        </div>
+        <div
+          className={cn(
+            "flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium",
+            live
+              ? "border-success/40 bg-success/10 text-success"
+              : "border-border bg-secondary/60 text-muted-foreground",
+          )}
+        >
+          <span className="relative flex h-2 w-2">
+            {live && (
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-60" />
+            )}
+            <span
+              className={cn(
+                "relative inline-flex h-2 w-2 rounded-full",
+                live ? "bg-success" : "bg-muted-foreground",
+              )}
+            />
+          </span>
+          {live ? "En vivo" : "Conectando…"}
+        </div>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[380px_1fr]">
@@ -293,13 +385,32 @@ function TicketsPage() {
                             · {fmtDateTime(m.created_at)}
                           </p>
                           <p className="mt-1 whitespace-pre-wrap text-sm">{m.message}</p>
+                          {m.attachment_path && <TicketAttachment path={m.attachment_path} />}
                         </div>
                       </div>
                     );
                   })}
                 </div>
+                <div ref={bottomRef} />
 
                 <div className="mt-6 border-t border-border pt-4">
+                  {file && (
+                    <div className="mb-3 flex items-center gap-2 rounded-lg border border-border bg-secondary/50 px-3 py-2 text-xs">
+                      <Paperclip className="h-3.5 w-3.5 shrink-0 text-primary" />
+                      <span className="truncate font-medium">{file.name}</span>
+                      <span className="shrink-0 text-muted-foreground">
+                        {(file.size / 1024).toFixed(0)} KB
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setFile(null)}
+                        className="ml-auto shrink-0 text-muted-foreground hover:text-foreground"
+                        aria-label="Quitar adjunto"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  )}
                   <Textarea
                     placeholder={
                       isInternalNote
@@ -312,20 +423,58 @@ function TicketsPage() {
                     className="min-h-24"
                   />
                   <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-                    <label className="flex cursor-pointer items-center gap-2 text-xs text-muted-foreground">
-                      <Checkbox
-                        checked={isInternalNote}
-                        onCheckedChange={(v) => setIsInternalNote(v === true)}
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                      <label className="flex cursor-pointer items-center gap-2 text-xs text-muted-foreground">
+                        <Checkbox
+                          checked={isInternalNote}
+                          onCheckedChange={(v) => setIsInternalNote(v === true)}
+                        />
+                        Nota interna (no la ve el cliente)
+                      </label>
+                      <SavedRepliesMenu
+                        disabled={replyMutation.isPending}
+                        onInsert={(content) =>
+                          setReply((prev) =>
+                            prev.trim() ? `${prev.trim()}\n\n${content}` : content,
+                          )
+                        }
                       />
-                      Nota interna (no la ve el cliente)
-                    </label>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*,.pdf"
+                        className="hidden"
+                        onChange={(e) => {
+                          const f = e.target.files?.[0];
+                          e.target.value = "";
+                          if (!f) return;
+                          if (f.size > 5 * 1024 * 1024) {
+                            toast.error("El archivo supera los 5 MB");
+                            return;
+                          }
+                          setFile(f);
+                        }}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={replyMutation.isPending}
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        <Paperclip className="mr-1.5 h-3.5 w-3.5" />
+                        Adjuntar
+                      </Button>
+                    </div>
                     <Button
-                      disabled={reply.trim().length === 0 || replyMutation.isPending}
+                      disabled={(reply.trim().length === 0 && !file) || replyMutation.isPending}
                       onClick={() =>
                         replyMutation.mutate({
                           ticketId: ticket.id,
-                          message: reply.trim(),
+                          ownerUserId: ticket.user_id,
+                          message: reply.trim() || "Adjunto enviado",
                           isInternalNote,
+                          file,
                         })
                       }
                     >
