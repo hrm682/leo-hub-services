@@ -2,7 +2,12 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { productInputSchema, reviewPaymentSchema, ticketMessageSchema } from "@/lib/schemas";
+import {
+  productInputSchema,
+  reviewPaymentSchema,
+  serviceCredentialsSchema,
+  ticketMessageSchema,
+} from "@/lib/schemas";
 
 export const getAdminMetrics = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -652,4 +657,75 @@ export const listNotificationsAdmin = createServerFn({ method: "GET" })
         .sort((a, b) => a.fullName.localeCompare(b.fullName, "es")),
       types: [...new Set(rows.map((n) => n.type))].sort(),
     };
+  });
+
+export const listCustomerServicesAdmin = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => z.object({ userId: z.string().uuid() }).parse(data))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { data: staff } = await supabase.rpc("is_staff", { _user_id: userId });
+    if (!staff) throw new Error("Solo el equipo de LoMaximoLeo");
+
+    const { data: services } = await supabase
+      .from("customer_services")
+      .select(
+        "id, service_reference, status, expiration_date, profile_name, profile_pin, account_email, products(name)",
+      )
+      .eq("user_id", data.userId)
+      .order("created_at", { ascending: false });
+
+    return {
+      services: (services ?? []).map((s) => ({
+        ...s,
+        product: Array.isArray(s.products) ? (s.products[0] ?? null) : s.products,
+      })),
+    };
+  });
+
+export const updateServiceCredentialsAdmin = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => serviceCredentialsSchema.parse(data))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { data: staff } = await supabase.rpc("is_staff", { _user_id: userId });
+    if (!staff) throw new Error("Solo el equipo de LoMaximoLeo");
+
+    const { data: service } = await supabase
+      .from("customer_services")
+      .select("id, user_id, service_reference")
+      .eq("id", data.serviceId)
+      .maybeSingle();
+    if (!service) throw new Error("Servicio no encontrado");
+
+    const { error } = await supabase
+      .from("customer_services")
+      .update({
+        profile_name: data.profileName,
+        profile_pin: data.profilePin,
+        account_email: data.accountEmail || null,
+      })
+      .eq("id", data.serviceId);
+    if (error) throw new Error("No se pudo guardar el perfil privado");
+
+    await supabase.from("service_events").insert({
+      customer_service_id: data.serviceId,
+      event_type: "perfil",
+      description: `Perfil privado actualizado: ${data.profileName}`,
+    });
+    await supabase.from("notifications").insert({
+      user_id: service.user_id,
+      type: "servicio",
+      title: "Tu perfil privado fue actualizado",
+      content: `Actualizamos los datos de tu perfil en el servicio ${service.service_reference}. Revísalos en Mi cuenta → Perfil privado.`,
+    });
+    await supabase.from("audit_logs").insert({
+      user_id: userId,
+      action: "service_credentials_updated",
+      entity_type: "customer_service",
+      entity_id: data.serviceId,
+      metadata: { profile_name: data.profileName },
+    });
+
+    return { ok: true as const };
   });

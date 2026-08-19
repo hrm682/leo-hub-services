@@ -36,6 +36,11 @@ export const myServicesQueryOptions = queryOptions({
   queryFn: () => getMyServices(),
 });
 
+export const privateProfilesQueryOptions = queryOptions({
+  queryKey: ["portal", "perfil-privado"],
+  queryFn: () => getPrivateProfiles(),
+});
+
 export const serviceDetailQueryOptions = (serviceId: string) =>
   queryOptions({
     queryKey: ["portal", "servicio", serviceId],
