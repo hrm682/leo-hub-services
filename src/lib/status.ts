@@ -95,6 +95,7 @@ export const TICKET_CATEGORY_LABELS: Record<string, string> = {
   renovacion: "Renovación",
   cambio_dispositivo: "Cambio de dispositivo",
   consulta: "Consulta general",
+  garantia: "Garantía",
   otro: "Otro",
 };
 

@@ -47,11 +47,39 @@ export const createRenewalSchema = z.object({
 
 export const createTicketSchema = z.object({
   customerServiceId: z.string().uuid("Selecciona un servicio"),
-  category: z.enum(["acceso", "facturacion", "renovacion", "cambio_dispositivo", "consulta", "otro"]),
+  category: z.enum([
+    "acceso",
+    "facturacion",
+    "renovacion",
+    "cambio_dispositivo",
+    "consulta",
+    "garantia",
+    "otro",
+  ]),
   priority: z.enum(["baja", "media", "alta"]),
   subject: z.string().trim().min(5, "Describe brevemente el tema").max(140),
   description: z.string().trim().min(10, "Cuéntanos más detalles").max(2000),
   attachmentPath: z.string().trim().max(500).optional(),
+});
+
+export const serviceCredentialsSchema = z.object({
+  serviceId: z.string().uuid(),
+  profileName: z
+    .string()
+    .trim()
+    .min(2, "Ingresa el nombre del perfil")
+    .max(60, "Máximo 60 caracteres"),
+  profilePin: z
+    .string()
+    .trim()
+    .regex(/^\d{4,8}$/, "El PIN debe tener de 4 a 8 dígitos"),
+  accountEmail: z
+    .string()
+    .trim()
+    .email("Correo inválido")
+    .max(255)
+    .optional()
+    .or(z.literal("")),
 });
 
 export const ticketMessageSchema = z.object({

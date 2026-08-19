@@ -7,6 +7,7 @@ import {
   getMyTickets,
   getNotifications,
   getPortalSummary,
+  getPrivateProfiles,
   getServiceDetail,
   getTicketDetail,
 } from "@/lib/portal.functions";
