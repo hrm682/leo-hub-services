@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Search, ShieldPlus, ShieldMinus } from "lucide-react";
+import { KeyRound, Search, ShieldPlus, ShieldMinus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -8,6 +8,7 @@ import { listCustomersAdmin, setUserRoleAdmin } from "@/lib/admin.functions";
 import { fmtDate } from "@/lib/format";
 import { TONE_CLASSES } from "@/lib/status";
 import { useIsStaff, useSession } from "@/lib/use-session";
+import { ServiceCredentialsDialog } from "@/components/admin/ServiceCredentialsDialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,6 +41,10 @@ function ClientesPage() {
   const { data: user } = useSession();
   const { isAdmin } = useIsStaff(user?.id);
   const [search, setSearch] = useState("");
+  const [servicesCustomer, setServicesCustomer] = useState<{
+    id: string;
+    full_name: string;
+  } | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-clientes"],
@@ -106,6 +111,7 @@ function ClientesPage() {
                 <th className="px-4 py-3 font-medium">Roles</th>
                 <th className="px-4 py-3 font-medium">Servicios</th>
                 <th className="px-4 py-3 font-medium">Desde</th>
+                <th className="px-4 py-3 text-right font-medium">Perfiles</th>
                 {isAdmin && <th className="px-4 py-3 text-right font-medium">Permisos</th>}
               </tr>
             </thead>
@@ -144,6 +150,17 @@ function ClientesPage() {
                       <span className="text-muted-foreground"> / {c.servicesCount} activos</span>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">{fmtDate(c.created_at)}</td>
+                    <td className="px-4 py-3 text-right">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={c.servicesCount === 0}
+                        onClick={() => setServicesCustomer({ id: c.id, full_name: c.full_name })}
+                      >
+                        <KeyRound className="mr-1.5 h-3.5 w-3.5" />
+                        Perfiles
+                      </Button>
+                    </td>
                     {isAdmin && (
                       <td className="px-4 py-3 text-right">
                         {!isSelf && !isTargetAdmin && (
@@ -181,6 +198,11 @@ function ClientesPage() {
           </table>
         </div>
       )}
+
+      <ServiceCredentialsDialog
+        customer={servicesCustomer}
+        onClose={() => setServicesCustomer(null)}
+      />
     </div>
   );
 }

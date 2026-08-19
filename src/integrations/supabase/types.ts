@@ -106,11 +106,14 @@ export type Database = {
       }
       customer_services: {
         Row: {
+          account_email: string | null
           created_at: string
           expiration_date: string | null
           id: string
           order_item_id: string | null
           product_id: string | null
+          profile_name: string | null
+          profile_pin: string | null
           service_reference: string
           start_date: string | null
           status: Database["public"]["Enums"]["service_status"]
@@ -118,11 +121,14 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          account_email?: string | null
           created_at?: string
           expiration_date?: string | null
           id?: string
           order_item_id?: string | null
           product_id?: string | null
+          profile_name?: string | null
+          profile_pin?: string | null
           service_reference?: string
           start_date?: string | null
           status?: Database["public"]["Enums"]["service_status"]
@@ -130,11 +136,14 @@ export type Database = {
           user_id: string
         }
         Update: {
+          account_email?: string | null
           created_at?: string
           expiration_date?: string | null
           id?: string
           order_item_id?: string | null
           product_id?: string | null
+          profile_name?: string | null
+          profile_pin?: string | null
           service_reference?: string
           start_date?: string | null
           status?: Database["public"]["Enums"]["service_status"]
@@ -614,6 +623,7 @@ export type Database = {
         | "cambio_dispositivo"
         | "consulta"
         | "otro"
+        | "garantia"
       ticket_priority: "baja" | "media" | "alta"
       ticket_status:
         | "abierto"
@@ -766,6 +776,7 @@ export const Constants = {
         "cambio_dispositivo",
         "consulta",
         "otro",
+        "garantia",
       ],
       ticket_priority: ["baja", "media", "alta"],
       ticket_status: [

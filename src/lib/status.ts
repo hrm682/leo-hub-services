@@ -95,6 +95,7 @@ export const TICKET_CATEGORY_LABELS: Record<string, string> = {
   renovacion: "Renovación",
   cambio_dispositivo: "Cambio de dispositivo",
   consulta: "Consulta general",
+  garantia: "Garantía",
   otro: "Otro",
 };
 
@@ -113,4 +114,35 @@ export const TICKET_PRIORITY_TONES: Record<string, Tone> = {
 export const PAYMENT_PROVIDER_LABELS: Record<string, string> = {
   binance_manual: "Binance (pago manual)",
   payphone: "Payphone",
+};
+
+/** Estado de la garantía: cubre toda la suscripción activa del servicio. */
+export type WarrantyState = "por_activar" | "activa" | "vencida" | "suspendida";
+
+export function warrantyState(
+  status: string,
+  expirationDate: string | null,
+): { state: WarrantyState; daysLeft: number | null } {
+  const days = daysRemaining(expirationDate);
+  if (status === "pago_pendiente") return { state: "por_activar", daysLeft: null };
+  if (status === "suspendido") return { state: "suspendida", daysLeft: days };
+  if (status === "activo" || status === "en_renovacion") {
+    if (days !== null && days < 0) return { state: "vencida", daysLeft: days };
+    return { state: "activa", daysLeft: days };
+  }
+  return { state: "vencida", daysLeft: days };
+}
+
+export const WARRANTY_LABELS: Record<WarrantyState, string> = {
+  por_activar: "Por activar",
+  activa: "Garantía activa",
+  vencida: "Garantía vencida",
+  suspendida: "Garantía pausada",
+};
+
+export const WARRANTY_TONES: Record<WarrantyState, Tone> = {
+  por_activar: "info",
+  activa: "success",
+  vencida: "danger",
+  suspendida: "warning",
 };

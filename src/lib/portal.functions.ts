@@ -139,6 +139,32 @@ export const getMyServices = createServerFn({ method: "GET" })
     };
   });
 
+export const getPrivateProfiles = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data } = await context.supabase
+      .from("customer_services")
+      .select(
+        "id, service_reference, status, start_date, expiration_date, created_at, profile_name, profile_pin, account_email, products(name, image_url, billing_label, duration_days)",
+      )
+      .order("created_at", { ascending: false });
+
+    return {
+      services: (data ?? []).map((s) => ({
+        id: s.id,
+        serviceReference: s.service_reference,
+        status: s.status,
+        startDate: s.start_date,
+        expirationDate: s.expiration_date,
+        createdAt: s.created_at,
+        profileName: s.profile_name,
+        profilePin: s.profile_pin,
+        accountEmail: s.account_email,
+        product: Array.isArray(s.products) ? (s.products[0] ?? null) : s.products,
+      })),
+    };
+  });
+
 export const getServiceDetail = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) => z.object({ serviceId: z.string().uuid() }).parse(data))

@@ -7,6 +7,7 @@ import {
   getMyTickets,
   getNotifications,
   getPortalSummary,
+  getPrivateProfiles,
   getServiceDetail,
   getTicketDetail,
 } from "@/lib/portal.functions";
@@ -33,6 +34,11 @@ export const portalSummaryQueryOptions = queryOptions({
 export const myServicesQueryOptions = queryOptions({
   queryKey: ["portal", "servicios"],
   queryFn: () => getMyServices(),
+});
+
+export const privateProfilesQueryOptions = queryOptions({
+  queryKey: ["portal", "perfil-privado"],
+  queryFn: () => getPrivateProfiles(),
 });
 
 export const serviceDetailQueryOptions = (serviceId: string) =>
