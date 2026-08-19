@@ -1,0 +1,1 @@
+alter type public.ticket_category add value if not exists 'garantia';

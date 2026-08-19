@@ -614,6 +614,7 @@ export type Database = {
         | "cambio_dispositivo"
         | "consulta"
         | "otro"
+        | "garantia"
       ticket_priority: "baja" | "media" | "alta"
       ticket_status:
         | "abierto"
@@ -766,6 +767,7 @@ export const Constants = {
         "cambio_dispositivo",
         "consulta",
         "otro",
+        "garantia",
       ],
       ticket_priority: ["baja", "media", "alta"],
       ticket_status: [
