@@ -734,3 +734,53 @@ export const updateServiceCredentialsAdmin = createServerFn({ method: "POST" })
 
     return { ok: true as const };
   });
+
+export const listSavedReplies = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    const { data: staff } = await supabase.rpc("is_staff", { _user_id: userId });
+    if (!staff) throw new Error("Solo el equipo de LoMaximoLeo");
+
+    const { data, error } = await supabase
+      .from("saved_replies")
+      .select("id, title, content, created_at, updated_at")
+      .order("title");
+    if (error) throw new Error("No se pudieron cargar las respuestas guardadas");
+    return { replies: data ?? [] };
+  });
+
+export const upsertSavedReply = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => savedReplySchema.parse(data))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { data: staff } = await supabase.rpc("is_staff", { _user_id: userId });
+    if (!staff) throw new Error("Solo el equipo de LoMaximoLeo");
+
+    const { error } = data.id
+      ? await supabase
+          .from("saved_replies")
+          .update({ title: data.title, content: data.content })
+          .eq("id", data.id)
+      : await supabase
+          .from("saved_replies")
+          .insert({ title: data.title, content: data.content, created_by: userId });
+    if (error) throw new Error("No se pudo guardar la respuesta");
+
+    return { ok: true as const };
+  });
+
+export const deleteSavedReply = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => z.object({ id: z.string().uuid() }).parse(data))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const { data: staff } = await supabase.rpc("is_staff", { _user_id: userId });
+    if (!staff) throw new Error("Solo el equipo de LoMaximoLeo");
+
+    const { error } = await supabase.from("saved_replies").delete().eq("id", data.id);
+    if (error) throw new Error("No se pudo eliminar la respuesta");
+
+    return { ok: true as const };
+  });
