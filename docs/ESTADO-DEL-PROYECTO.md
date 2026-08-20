@@ -50,6 +50,9 @@ Todo lo de abajo se refiere a lo **EN VIVO (PHP/MySQL)** salvo que se indique.
 - **Portal del cliente** (`/api/portal/`): login, cambio de clave obligatorio,
   **"Mis servicios"** con días de vigencia, botón **Renovar**.
 - **Renovaciones** (`php/renovar.php`) → extiende la vigencia al aprobar.
+- **Soporte / tickets** (`php/soporte.php`): el cliente crea tickets y ve la
+  conversación; incluye el botón **"Necesito código de verificación"** (lo
+  atiende un agente desde el panel — humano en el bucle, sin extracción automática).
 - **Responsive móvil** validado (header, banner, hero, catálogo).
 
 ### Panel admin (`/api/admin/`)
@@ -58,6 +61,10 @@ Todo lo de abajo se refiere a lo **EN VIVO (PHP/MySQL)** salvo que se indique.
   destacar, mostrar/ocultar (cambios salen solos en la tienda).
 - **Pagos**: **Aprobar** activa el servicio con su vigencia y **descuenta stock**;
   aprobar **renovación** extiende la vigencia; **Rechazar** cancela/revierte.
+- **Tickets**: bandeja del equipo, responder con **plantillas** y cambiar estado.
+- **Reportes**: dashboard con ingresos totales/mes, pagos pendientes, servicios
+  activos, clientes, vencimientos (7 días/vencidos), tickets abiertos, gráfico de
+  ingresos por mes, top productos y últimas órdenes.
 - Marca (logo de Leo + partículas) en portal y admin.
 
 ---
@@ -71,15 +78,18 @@ Todo lo de abajo se refiere a lo **EN VIVO (PHP/MySQL)** salvo que se indique.
 3. Confirmar **SSL/HTTPS** del dominio y borrar `install.php` del servidor.
 
 ## 🟡 Pendiente — Prioridad 2 (operación)
-4. **Tickets de soporte** cliente ↔ equipo (incluye "solicitar verificación"
-   con humano en el bucle — ver documento aparte).
-5. **Recordatorios de vencimiento** (7/3/1 días) para que renueven.
-6. **Notificaciones al cliente** (campana en el portal y/o WhatsApp).
+4. **Recordatorios de vencimiento** (7/3/1 días) para que renueven.
+5. **Notificaciones al cliente** (campana en el portal y/o WhatsApp).
+
+> Ya listos de esta prioridad: **Tickets de soporte** (cliente + admin, con el
+> flujo "solicitar verificación" con humano en el bucle).
 
 ## 🟢 Pendiente — Prioridad 3 (crecimiento)
-7. **Binance Pay automático** (hoy el pago es manual: el admin aprueba).
-8. **Cupones/descuentos** y **reportes de ventas**.
-9. **Categorías + buscador** en la tienda; pulir diseño de portal/admin.
+6. **Binance Pay automático** (hoy el pago es manual: el admin aprueba).
+7. **Cupones / descuentos**.
+8. **Categorías + buscador** en la tienda; pulir diseño de portal/admin.
+
+> Ya listo de esta prioridad: **Reportes / dashboard de ventas**.
 
 ## ⚪ Pendiente — Prioridad 4 (extras)
 10. Respaldos automáticos de la base, monitoreo de uptime, PWA instalable.
@@ -92,8 +102,9 @@ Todo lo de abajo se refiere a lo **EN VIVO (PHP/MySQL)** salvo que se indique.
 | `mysql/schema.sql` | Estructura MySQL (pegar en phpMyAdmin) |
 | `php/lib.php` | Núcleo backend (DB, sesión, auth) |
 | `php/api/*.php` | Endpoints (login, logout, me, change-password, request-reset) |
-| `php/admin/*.php` | Panel admin (index, productos, pagos) |
+| `php/admin/*.php` | Panel admin (reportes, resumen, productos, pagos, tickets) |
 | `php/portal/index.php` | Portal del cliente |
+| `php/soporte.php` | Soporte / tickets del cliente |
 | `php/comprar.php`, `php/renovar.php` | Compra y renovación |
 | `web/index.php` | Página principal (landing + catálogo) |
 | `.github/workflows/deploy.yml` | Despliegue automático por FTP |

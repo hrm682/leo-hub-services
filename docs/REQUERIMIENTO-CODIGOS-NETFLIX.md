@@ -54,5 +54,9 @@ automático), que reduce el trabajo manual a casi nada:
 Ventajas: es rápido para el cliente, no automatiza la evasión, no requiere las
 claves del correo, y mantiene el control y la responsabilidad en manos humanas.
 
-> Si se aprueba esta alternativa, se integra dentro del sistema de **tickets**
-> (Prioridad 2 del estado del proyecto).
+> ✅ **Ya implementada y en vivo.** En el portal del cliente
+> (`/api/soporte.php`) existe el botón **"¿Netflix te pide un código de
+> verificación?"**: el cliente lo solicita **desde la propia página**, el pedido
+> llega al panel de **Tickets** del admin, y una persona del equipo responde el
+> código en el chat. Cumple el objetivo de "que lo hagan desde mi plataforma"
+> sin automatizar la evasión.
