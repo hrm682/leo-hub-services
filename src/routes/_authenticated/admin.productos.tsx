@@ -54,6 +54,7 @@ const IMAGE_PRESETS = [
   { value: "/images/products/directvgo.jpg", label: "DirecTV GO" },
   { value: "/images/products/youtube.jpg", label: "YouTube" },
   { value: "/images/products/spotify.jpg", label: "Spotify" },
+  { value: "/images/products/winplus.jpg", label: "Win+" },
   { value: "/images/products/combo.jpg", label: "Combo" },
   { value: "/images/products/streaming.jpg", label: "Streaming" },
   { value: "/images/products/musica.jpg", label: "Música" },

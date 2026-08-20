@@ -13,6 +13,7 @@ const PLATFORMS: { name: string; color: string }[] = [
   { name: "Spotify", color: "#1DB954" },
   { name: "YouTube", color: "#FF3B30" },
   { name: "DirecTV GO", color: "#38BDF8" },
+  { name: "Win+", color: "#F97316" },
 ];
 
 export function PlatformStrip() {

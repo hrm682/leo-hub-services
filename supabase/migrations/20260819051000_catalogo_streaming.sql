@@ -25,5 +25,12 @@ values
    'Música sin anuncios, offline y en alta calidad.',
    'Cuenta Spotify Premium con perfil individual. Millones de canciones sin anuncios, descargas y audio de alta calidad.',
    array['Sin anuncios','Audio de alta calidad','Descargas offline','Saltos ilimitados','Garantía durante toda la suscripción'],
-   '/images/products/spotify.jpg', 3.50, 30, 'mensual', true, false)
+   '/images/products/spotify.jpg', 3.50, 30, 'mensual', true, false),
+
+  ((select id from public.categories where slug = 'streaming'),
+   'Win+', 'win-plus',
+   'Fútbol colombiano y deportes en vivo, sin caídas.',
+   'Cuenta Win+ (Win Sports+) con perfil individual. Todo el fútbol profesional colombiano y deportes en vivo desde cualquier dispositivo.',
+   array['Fútbol colombiano en vivo','Perfil individual','Deportes en directo','Multidispositivo','Garantía durante toda la suscripción'],
+   '/images/products/winplus.jpg', 4.00, 30, 'mensual', true, true)
 on conflict (slug) do nothing;
