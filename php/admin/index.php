@@ -90,6 +90,7 @@ header('Content-Type: text/html; charset=utf-8');
 </style>
 </head>
 <body>
+<?php include __DIR__ . '/../brand.php'; ?>
 <div class="wrap">
 <?php if ($flash): ?><div class="flash"><?= e($flash) ?></div><?php endif; ?>
 
