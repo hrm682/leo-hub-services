@@ -127,6 +127,10 @@ function TerminosPage() {
               Para consultas sobre estos términos, utiliza el chat de soporte o crea un ticket desde
               tu cuenta.
             </p>
+            <p className="mt-2">
+              Responsable: <strong>[Razón social]</strong> · RUC / Cédula: [RUC] · [Ciudad], Ecuador
+              · Correo: [correo@tudominio.com]. (Datos por completar con tu información real.)
+            </p>
           </section>
         </div>
 

@@ -115,6 +115,11 @@ function PrivacidadPage() {
               Para ejercer tus derechos o resolver dudas de privacidad, usa el chat de soporte o
               crea un ticket desde tu cuenta.
             </p>
+            <p className="mt-2">
+              Responsable del tratamiento: <strong>[Razón social]</strong> · RUC / Cédula: [RUC] ·
+              [Ciudad], Ecuador · Correo: [correo@tudominio.com]. (Datos por completar con tu
+              información real.)
+            </p>
           </section>
         </div>
 
