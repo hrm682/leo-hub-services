@@ -115,6 +115,7 @@ header('Content-Type: text/html; charset=utf-8');
     <a href="index.php">Resumen</a>
     <a href="productos.php">Productos</a>
     <a href="pagos.php" class="on">Pagos</a>
+    <a href="tickets.php">Tickets</a>
   </div>
   <h1>Pagos y órdenes</h1>
   <?php if ($flash): ?><div class="flash"><?= e($flash) ?></div><?php endif; ?>

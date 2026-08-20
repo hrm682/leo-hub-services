@@ -137,7 +137,8 @@ header('Content-Type: text/html; charset=utf-8');
   <div class="nav">
     <a href="index.php">Resumen</a>
     <a href="productos.php" class="on">Productos</a>
-    <a href="index.php" style="margin-left:auto;color:var(--muted)">Salir →</a>
+    <a href="pagos.php">Pagos</a>
+    <a href="tickets.php">Tickets</a>
   </div>
   <div style="display:flex;justify-content:space-between;align-items:center;">
     <h1>Productos e inventario</h1>

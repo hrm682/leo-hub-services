@@ -168,9 +168,12 @@ header('Content-Type: text/html; charset=utf-8');
 <?php else: ?>
   <div class="top">
     <h1>Hola, <?= e($me['full_name'] ?: 'cliente') ?></h1>
-    <form method="post"><input type="hidden" name="csrf" value="<?= e($_SESSION['csrf']) ?>">
-      <input type="hidden" name="action" value="logout"><button class="ghost" type="submit">Salir</button>
-    </form>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <a href="/api/soporte.php" style="border:1px solid var(--line);border-radius:9px;padding:8px 14px;color:var(--text);text-decoration:none;font-weight:600;">Soporte</a>
+      <form method="post" style="display:inline"><input type="hidden" name="csrf" value="<?= e($_SESSION['csrf']) ?>">
+        <input type="hidden" name="action" value="logout"><button class="ghost" type="submit">Salir</button>
+      </form>
+    </div>
   </div>
   <h2>Mis servicios</h2>
   <div class="card">
