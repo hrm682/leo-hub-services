@@ -31,6 +31,15 @@ el admin**, y **solicitud de recuperación que llega al panel del admin**
 | `api/request-reset.php` | El cliente pide recuperación → notifica a los admins en su panel. |
 | `api/admin/reset-password.php` | (admin) Resetea a la clave genérica y fuerza el cambio. |
 
+## Panel de administración (usable desde ya)
+Abre **`admin/index.php`** en tu navegador (ej. `https://tudominio.com/api/admin/`).
+Inicia sesión con el admin y podrás:
+- Ver las **solicitudes de recuperación** pendientes y **resetear** con un clic.
+- Ver la **lista de clientes** con su **fecha de vencimiento y días restantes**.
+- Resetear la contraseña de cualquier cliente (queda la genérica + cambio obligatorio).
+
+Es un panel PHP puro (server-rendered), independiente del frontend React.
+
 ## Importar tus clientes con vigencia
 1. Copia `clients.example.csv` a `clients.csv` y llénalo:
    `email,full_name,phone,product_slug,remaining_days`
