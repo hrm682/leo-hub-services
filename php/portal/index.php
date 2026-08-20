@@ -22,6 +22,11 @@ $flash = null;
 $flashType = 'ok';
 $action = $_POST['action'] ?? null;
 
+// Retorno seguro tras el login (solo rutas locales, sin redirección abierta).
+$nextRaw = (string) ($_GET['next'] ?? ($_POST['next'] ?? ''));
+$nextSafe = (strpos($nextRaw, '/') === 0 && strpos($nextRaw, '//') !== 0
+    && preg_match('#^/[A-Za-z0-9/_.%?=&\-]*$#', $nextRaw)) ? $nextRaw : '';
+
 if ($action === 'login') {
     $email = strtolower(trim((string) ($_POST['email'] ?? '')));
     $pass = (string) ($_POST['password'] ?? '');
@@ -31,7 +36,7 @@ if ($action === 'login') {
     if ($u && $u['password_hash'] && password_verify($pass, $u['password_hash'])) {
         session_regenerate_id(true);
         $_SESSION['user_id'] = $u['id'];
-        header('Location: index.php');
+        header('Location: ' . ($nextSafe !== '' ? $nextSafe : 'index.php'));
         exit;
     }
     $flash = 'Correo o contraseña incorrectos.';
@@ -130,6 +135,7 @@ header('Content-Type: text/html; charset=utf-8');
   <div class="card" style="max-width:400px;">
     <form method="post">
       <input type="hidden" name="action" value="login">
+      <input type="hidden" name="next" value="<?= e($nextSafe) ?>">
       <label>Correo</label><input type="email" name="email" required autofocus>
       <label>Contraseña</label><input type="password" name="password" required>
       <div style="margin-top:16px;"><button type="submit">Ingresar</button></div>

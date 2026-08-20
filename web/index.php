@@ -120,7 +120,7 @@ $platforms = [
             <div class="d"><?= e($p['short_description']) ?></div>
             <div class="prow">
               <div class="price"><?= money($p['price']) ?> <small>/ <?= e($p['billing_label']) ?></small></div>
-              <a class="btn gold" href="/api/portal/" style="padding:8px 14px;">Comprar</a>
+              <a class="btn gold" href="/api/comprar.php?slug=<?= e($p['slug']) ?>" style="padding:8px 14px;">Comprar</a>
             </div>
           </div>
         </div>
