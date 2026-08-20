@@ -176,7 +176,7 @@ header('Content-Type: text/html; charset=utf-8');
   <div class="card">
     <?php
     $st = db()->prepare(
-        "SELECT cs.service_reference, cs.status, cs.expiration_date, p.name AS product
+        "SELECT cs.id, cs.service_reference, cs.status, cs.expiration_date, p.name AS product
          FROM customer_services cs LEFT JOIN products p ON p.id = cs.product_id
          WHERE cs.user_id = ? ORDER BY cs.created_at DESC"
     );
@@ -186,7 +186,7 @@ header('Content-Type: text/html; charset=utf-8');
     <?php if (!$services): ?>
       <p class="muted">Aún no tienes servicios activos.</p>
     <?php else: ?>
-      <table><thead><tr><th>Servicio</th><th>Referencia</th><th>Vence</th><th>Días</th><th>Estado</th></tr></thead><tbody>
+      <table><thead><tr><th>Servicio</th><th>Referencia</th><th>Vence</th><th>Días</th><th>Estado</th><th></th></tr></thead><tbody>
       <?php foreach ($services as $s):
           $days = $s['expiration_date'] ? (int) floor((strtotime($s['expiration_date']) - time()) / 86400) : null;
           $cls = $days === null ? 'muted' : ($days < 0 ? 'danger' : ($days <= 7 ? 'warn' : 'ok'));
@@ -197,6 +197,11 @@ header('Content-Type: text/html; charset=utf-8');
           <td class="muted"><?= $s['expiration_date'] ? e(substr($s['expiration_date'], 0, 10)) : '—' ?></td>
           <td class="<?= $cls ?>"><?= $days === null ? '—' : e((string) $days) ?></td>
           <td><span class="pill"><?= e($s['status']) ?></span></td>
+          <td style="text-align:right;">
+            <?php if (in_array($s['status'], ['activo', 'en_renovacion'], true)): ?>
+              <a href="/api/renovar.php?id=<?= e($s['id']) ?>" style="display:inline-block;background:linear-gradient(90deg,#e8b64c,#f4d47a);color:#1a1205;border-radius:8px;padding:6px 12px;font-weight:700;font-size:13px;">Renovar</a>
+            <?php endif; ?>
+          </td>
         </tr>
       <?php endforeach; ?>
       </tbody></table>

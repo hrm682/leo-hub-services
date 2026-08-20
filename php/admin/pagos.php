@@ -35,8 +35,19 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && csrf_ok() && !empty($_POST[
                 $items->execute([$pay['order_id']]);
                 foreach ($items->fetchAll() as $it) {
                     if ($it['customer_service_id']) {
-                        db()->prepare("UPDATE customer_services SET status='activo', start_date=NOW(), expiration_date=DATE_ADD(NOW(), INTERVAL ? DAY) WHERE id=?")
-                            ->execute([(int) $it['duration_days'], $it['customer_service_id']]);
+                        $dur = (int) $it['duration_days'];
+                        if ($pay['kind'] === 'renovacion') {
+                            // Extiende desde el vencimiento actual si sigue vigente; si no, desde hoy.
+                            $q = db()->prepare('SELECT expiration_date FROM customer_services WHERE id=?');
+                            $q->execute([$it['customer_service_id']]);
+                            $exp = $q->fetchColumn();
+                            $base = ($exp && strtotime((string) $exp) > time()) ? (string) $exp : date('Y-m-d H:i:s');
+                            db()->prepare("UPDATE customer_services SET status='activo', expiration_date=DATE_ADD(?, INTERVAL ? DAY) WHERE id=?")
+                                ->execute([$base, $dur, $it['customer_service_id']]);
+                        } else {
+                            db()->prepare("UPDATE customer_services SET status='activo', start_date=NOW(), expiration_date=DATE_ADD(NOW(), INTERVAL ? DAY) WHERE id=?")
+                                ->execute([$dur, $it['customer_service_id']]);
+                        }
                     }
                     if ($it['product_id'] && $pay['kind'] !== 'renovacion') {
                         db()->prepare('UPDATE products SET stock = GREATEST(stock - ?, 0) WHERE id = ? AND stock IS NOT NULL')
@@ -50,7 +61,16 @@ if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST' && csrf_ok() && !empty($_POST[
             } elseif ($act === 'reject') {
                 db()->prepare("UPDATE payments SET status='rechazado', reviewed_by=? WHERE id=?")->execute([$me['id'], $pay['id']]);
                 db()->prepare("UPDATE orders SET status='rechazada' WHERE id=?")->execute([$pay['order_id']]);
-                notify($pay['user_id'], 'pago', 'Pago rechazado', "No pudimos validar el pago de la orden {$pay['order_number']}. Contáctanos por soporte.");
+                if ($pay['kind'] === 'renovacion') {
+                    $rv = db()->prepare('SELECT customer_service_id FROM order_items WHERE order_id=?');
+                    $rv->execute([$pay['order_id']]);
+                    foreach ($rv->fetchAll() as $r2) {
+                        if ($r2['customer_service_id']) {
+                            db()->prepare("UPDATE customer_services SET status='activo' WHERE id=? AND status='en_renovacion'")->execute([$r2['customer_service_id']]);
+                        }
+                    }
+                }
+                notify($pay['user_id'], 'pago', 'Pago rechazado', "No pudimos validar el pago de la orden {$pay['order_number']}. Tu servicio sigue activo. Contáctanos por soporte.");
                 $flash = 'Pago rechazado.';
             }
             db()->commit();
