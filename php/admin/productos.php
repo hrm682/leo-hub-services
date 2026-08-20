@@ -135,6 +135,7 @@ header('Content-Type: text/html; charset=utf-8');
 <?php include __DIR__ . '/../brand.php'; ?>
 <div class="wrap">
   <div class="nav">
+    <a href="reportes.php">Reportes</a>
     <a href="index.php">Resumen</a>
     <a href="productos.php" class="on">Productos</a>
     <a href="pagos.php">Pagos</a>

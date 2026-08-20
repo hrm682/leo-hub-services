@@ -93,7 +93,7 @@ header('Content-Type: text/html; charset=utf-8');
 </style></head><body>
 <?php include __DIR__ . '/../brand.php'; ?>
 <div class="wrap">
-  <div class="nav"><a href="index.php">Resumen</a><a href="productos.php">Productos</a><a href="pagos.php">Pagos</a><a href="tickets.php" class="on">Tickets</a></div>
+  <div class="nav"><a href="reportes.php">Reportes</a><a href="index.php">Resumen</a><a href="productos.php">Productos</a><a href="pagos.php">Pagos</a><a href="tickets.php" class="on">Tickets</a></div>
 
   <?php if ($ticket): ?>
     <p><a href="tickets.php">← Todos los tickets</a></p>
