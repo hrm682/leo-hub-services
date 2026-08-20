@@ -70,6 +70,16 @@ $platforms = [
   .prow { display:flex; align-items:end; justify-content:space-between; border-top:1px solid var(--line); padding-top:12px; margin-top:6px; }
   .price { font-size:20px; font-weight:800; color:var(--gold); } .price small { color:var(--muted); font-weight:500; font-size:12px; }
   footer { border-top:1px solid var(--line); padding:24px 0; color:var(--muted); font-size:13px; text-align:center; }
+  .mentor { position:relative; z-index:1; width:100%; margin:30px 0; padding:52px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); background:linear-gradient(180deg, rgba(232,182,76,.07), transparent 70%); }
+  .mentor-in { display:flex; align-items:center; gap:40px; }
+  .mentor-img { flex:0 0 auto; width:240px; height:240px; border-radius:999px; object-fit:cover; box-shadow:0 0 0 3px rgba(232,182,76,.55), 0 0 70px rgba(232,182,76,.25); }
+  .mentor-txt h2 { font-size:clamp(26px,4.4vw,42px); margin:12px 0; line-height:1.1; }
+  .mentor-txt p { color:var(--muted); font-size:17px; max-width:54ch; margin:0; }
+  @media (max-width:760px){
+    .mentor { padding:40px 0; } .mentor-in { flex-direction:column; text-align:center; gap:22px; }
+    .mentor-img { width:190px; height:190px; } .mentor-txt p { margin:0 auto; }
+    .nav .btn { padding:8px 12px; } .cta { gap:10px; }
+  }
 </style>
 </head>
 <body>
@@ -97,6 +107,17 @@ $platforms = [
     <?php foreach ($platforms as $p): ?>
       <span class="chip" style="color:<?= $p[1] ?>;border-color:<?= $p[1] ?>55;background:<?= $p[1] ?>14;"><?= e($p[0]) ?></span>
     <?php endforeach; ?>
+  </div>
+</section>
+
+<section class="mentor">
+  <div class="wrap mentor-in">
+    <img class="mentor-img" src="/api/assets/leo.jpg" alt="Leo, mentor de Lo Máximo Leo">
+    <div class="mentor-txt">
+      <span class="badge">Tu mentor</span>
+      <h2>Leo, la mente detrás de <span class="g">Lo Máximo Leo</span></h2>
+      <p>Cuentas de streaming premium, soporte real y experiencia que respalda cada compra. Aquí no estás solo: Leo y su equipo te acompañan en cada paso.</p>
+    </div>
   </div>
 </section>
 
