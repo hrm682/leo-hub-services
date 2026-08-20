@@ -8,6 +8,7 @@ on:
     branches: [main]
     paths:
       - "php/**"
+      - "web/**"
       - ".github/workflows/deploy.yml"
   workflow_dispatch: {}
 
@@ -51,3 +52,15 @@ jobs:
             **/config.example.php
             **/clients.example.csv
             **/README.md
+
+      - name: Subir web/ (página principal) a la raíz por FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: ./web/
+          server-dir: ./
+          state-name: .ftp-deploy-web.json
