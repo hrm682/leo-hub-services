@@ -114,7 +114,6 @@ $platforms = [
   <div class="wrap mentor-in">
     <img class="mentor-img" src="/api/assets/leo.jpg" alt="Leo, mentor de Lo Máximo Leo">
     <div class="mentor-txt">
-      <span class="badge">Tu mentor</span>
       <h2>Leo, la mente detrás de <span class="g">Lo Máximo Leo</span></h2>
       <p>Cuentas de streaming premium, soporte real y experiencia que respalda cada compra. Aquí no estás solo: Leo y su equipo te acompañan en cada paso.</p>
     </div>
