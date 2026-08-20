@@ -1,0 +1,40 @@
+name: Desplegar backend PHP por FTP
+
+# Sube la carpeta php/ al hosting por FTPS cada vez que cambie (o manualmente).
+# Las credenciales NUNCA van aquí: se leen de los Secrets del repositorio.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "php/**"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch: {}
+
+jobs:
+  ftp-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Subir php/ por FTPS
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          # Sube el contenido de php/ a la carpeta /api/ del hosting.
+          # Ajusta server-dir si tu ruta es otra (p. ej. ./public_html/api/).
+          local-dir: ./php/
+          server-dir: ./api/
+          # Solo gestiona la carpeta /api/ (no toca el resto de tu sitio).
+          # Nunca sube secretos ni datos privados:
+          exclude: |
+            **/config.php
+            **/clients.csv
+            **/config.example.php
+            **/clients.example.csv
+            **/README.md
