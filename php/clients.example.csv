@@ -1,0 +1,4 @@
+email,full_name,phone,product_slug,remaining_days
+juan@correo.com,Juan Pérez,3001234567,netflix-premium,12
+maria@correo.com,María Gómez,3019876543,disney-plus-premium,25
+carlos@correo.com,Carlos Ruiz,,win-plus,7

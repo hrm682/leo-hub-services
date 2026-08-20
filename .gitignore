@@ -38,3 +38,7 @@ dist-ssr
 
 # npm lockfile (el proyecto usa bun)
 package-lock.json
+
+# Backend PHP: credenciales y datos reales
+php/config.php
+php/clients.csv
