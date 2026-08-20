@@ -107,6 +107,10 @@ header('Content-Type: text/html; charset=utf-8');
     </form>
   </div>
 <?php else: ?>
+  <div style="display:flex;gap:14px;margin-bottom:8px;font-size:14px;">
+    <a href="index.php" style="color:var(--gold);font-weight:700;text-decoration:none;">Resumen</a>
+    <a href="productos.php" style="color:var(--muted);text-decoration:none;">Productos</a>
+  </div>
   <div class="top">
     <h1>Panel de administración</h1>
     <form method="post"><input type="hidden" name="csrf" value="<?= e($_SESSION['csrf']) ?>">
