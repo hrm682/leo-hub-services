@@ -4,6 +4,7 @@ import { ArrowRight, LifeBuoy, RefreshCcw, ShieldCheck, Zap } from "lucide-react
 
 import { catalogQueryOptions } from "@/lib/queries";
 import { ParticlesBackground } from "@/components/site/ParticlesBackground";
+import { PlatformStrip } from "@/components/site/PlatformStrip";
 import { ProductCard } from "@/components/site/ProductCard";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
@@ -76,8 +77,8 @@ function LandingPage() {
             Todas tus plataformas, <span className="text-gold-gradient">en un solo lugar.</span>
           </h1>
           <p className="mx-auto mt-6 max-w-xl text-base text-muted-foreground sm:text-lg">
-            Netflix, Disney+, HBO Max, Prime Video, Paramount+ y ViX con activación rápida,
-            precios justos y un soporte que sí responde.
+            Netflix, Disney+, HBO Max, Prime Video, Paramount+ y ViX con activación rápida, precios
+            justos y un soporte que sí responde.
           </p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <Button asChild size="lg" className="font-semibold">
@@ -90,6 +91,8 @@ function LandingPage() {
               <Link to="/auth">Ya soy cliente</Link>
             </Button>
           </div>
+
+          <PlatformStrip />
         </section>
 
         {showcase.length > 0 && (
