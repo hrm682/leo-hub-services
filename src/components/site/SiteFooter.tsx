@@ -1,3 +1,5 @@
+import { Link } from "@tanstack/react-router";
+
 export function SiteFooter() {
   return (
     <footer className="border-t border-border py-8">
@@ -8,7 +10,15 @@ export function SiteFooter() {
             © {new Date().getFullYear()} LoMaximoLeo — Cuentas de streaming con soporte premium.
           </p>
         </div>
-        <p className="text-xs text-muted-foreground">Pagos seguros con Binance Pay</p>
+        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+          <Link to="/terminos" className="transition-colors hover:text-foreground">
+            Términos
+          </Link>
+          <Link to="/privacidad" className="transition-colors hover:text-foreground">
+            Privacidad
+          </Link>
+          <span>Pagos seguros con Binance Pay</span>
+        </div>
       </div>
     </footer>
   );
