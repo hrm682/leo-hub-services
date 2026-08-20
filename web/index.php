@@ -51,7 +51,8 @@ $platforms = [
   .btn { display:inline-flex; align-items:center; gap:8px; border-radius:10px; padding:10px 18px; font-weight:700; cursor:pointer; border:0; }
   .btn.gold { background:linear-gradient(90deg,#e8b64c,#f4d47a); color:#1a1205; }
   .btn.ghost { background:transparent; border:1px solid var(--line); color:var(--text); }
-  .hero { text-align:center; padding:60px 0 30px; }
+  .hero { position:relative; text-align:center; padding:64px 0 34px; }
+  .hero::before { content:''; position:absolute; top:-30px; left:50%; transform:translateX(-50%); width:min(820px,92%); height:440px; background:radial-gradient(closest-side, rgba(232,182,76,.18), transparent 72%); filter:blur(24px); z-index:-1; pointer-events:none; }
   .badge { display:inline-flex; gap:8px; align-items:center; border:1px solid rgba(232,182,76,.3); background:rgba(232,182,76,.08); color:var(--gold); padding:6px 14px; border-radius:999px; font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase; }
   h1 { font-size:clamp(34px,6vw,60px); line-height:1.05; margin:18px auto; max-width:14ch; font-weight:800; }
   .hero p { color:var(--muted); font-size:18px; max-width:56ch; margin:0 auto 26px; }
@@ -95,6 +96,16 @@ $platforms = [
   </div>
 </header>
 
+<section class="mentor">
+  <div class="wrap mentor-in">
+    <img class="mentor-img" src="/api/assets/leo.jpg" alt="Leo, de Lo Máximo Leo">
+    <div class="mentor-txt">
+      <h2>Leo, la mente detrás de <span class="g">Lo Máximo Leo</span></h2>
+      <p>Cuentas de streaming premium, soporte real y experiencia que respalda cada compra. Aquí no estás solo: Leo y su equipo te acompañan en cada paso.</p>
+    </div>
+  </div>
+</section>
+
 <section class="hero wrap">
   <span class="badge">Cuentas de streaming premium</span>
   <h1>Cuentas Stream Premium, <span class="g">sin caídas.</span></h1>
@@ -107,16 +118,6 @@ $platforms = [
     <?php foreach ($platforms as $p): ?>
       <span class="chip" style="color:<?= $p[1] ?>;border-color:<?= $p[1] ?>55;background:<?= $p[1] ?>14;"><?= e($p[0]) ?></span>
     <?php endforeach; ?>
-  </div>
-</section>
-
-<section class="mentor">
-  <div class="wrap mentor-in">
-    <img class="mentor-img" src="/api/assets/leo.jpg" alt="Leo, mentor de Lo Máximo Leo">
-    <div class="mentor-txt">
-      <h2>Leo, la mente detrás de <span class="g">Lo Máximo Leo</span></h2>
-      <p>Cuentas de streaming premium, soporte real y experiencia que respalda cada compra. Aquí no estás solo: Leo y su equipo te acompañan en cada paso.</p>
-    </div>
   </div>
 </section>
 
