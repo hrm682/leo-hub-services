@@ -57,7 +57,11 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <Link to="/" className="flex items-center gap-2.5">
-          <img src="/images/brand/logo-lion.png" alt="LoMaximoLeo" className="h-9 w-9" />
+          <img
+            src="/images/brand/leo-logo.jpg"
+            alt="Lo Máximo Leo"
+            className="h-9 w-9 rounded-full ring-1 ring-primary/40"
+          />
           <span className="font-display text-lg font-bold tracking-tight">
             LoMaximo<span className="text-gold-gradient">Leo</span>
           </span>
