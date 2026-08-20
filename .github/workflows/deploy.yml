@@ -18,6 +18,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Generar config.php desde Secrets
+        run: |
+          cat > php/config.php <<PHP
+          <?php
+          return [
+              'db_host' => '${{ secrets.DB_HOST }}',
+              'db_name' => '${{ secrets.DB_NAME }}',
+              'db_user' => '${{ secrets.DB_USER }}',
+              'db_pass' => '${{ secrets.DB_PASSWORD }}',
+              'generic_password' => '${{ secrets.GENERIC_PASSWORD }}',
+              'app_origin' => '${{ secrets.APP_ORIGIN }}',
+          ];
+          PHP
+
       - name: Subir php/ por FTPS
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
@@ -33,7 +47,6 @@ jobs:
           # Solo gestiona la carpeta /api/ (no toca el resto de tu sitio).
           # Nunca sube secretos ni datos privados:
           exclude: |
-            **/config.php
             **/clients.csv
             **/config.example.php
             **/clients.example.csv
